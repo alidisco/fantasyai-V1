@@ -6,9 +6,11 @@ from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.neural_network import MLPRegressor
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-import xgboost as xgb
-from datetime import datetime, timedelta
+try:
+    import xgboost as xgb
+except ImportError:
+    xgb = None
+
 import json
 import os
 import re
@@ -412,8 +414,9 @@ class FPLAnalyzer:
             'gradient_boost': GradientBoostingRegressor(n_estimators=30, max_depth=5, random_state=42),
         }
         
-        if len(X) > 100:
+        if xgb is not None and len(X) > 100:
             models_config['xgboost'] = xgb.XGBRegressor(n_estimators=30, max_depth=5, random_state=42, n_jobs=-1)
+
             
         if len(X) > 200:
             models_config['neural_network'] = MLPRegressor(
