@@ -1,0 +1,8 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+ai_manager_settings.json
+ai_manager_logs.json
+session_cache.json
+

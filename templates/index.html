@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Autonomous Manager (ID: 9765376) | FPL AI Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #070913;
+            --bg-surface: #0e1224;
+            --bg-surface-elevated: #151b36;
+            --primary: #00ff87;
+            --primary-glow: rgba(0, 255, 135, 0.35);
+            --secondary: #00e5ff;
+            --accent-purple: #9d4edd;
+            --danger: #ff4757;
+            --warning: #ffa502;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(0, 255, 135, 0.25);
+            --pitch-green: #0a2e1d;
+            --pitch-lines: rgba(255, 255, 255, 0.14);
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --shadow-subtle: 0 12px 32px rgba(0, 0, 0, 0.4);
+            --shadow-glow: 0 0 24px rgba(0, 255, 135, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 10%, rgba(0, 255, 135, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 85% 90%, rgba(157, 78, 221, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(0, 229, 255, 0.03) 0%, transparent 60%);
+            padding-bottom: 60px;
+        }
+
+        .app-layout {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 24px 28px;
+        }
+
+        /* Top Header */
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: rgba(14, 18, 36, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #000;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .brand-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #fff 40%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-status-strip {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .live-status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            background: rgba(0, 255, 135, 0.12);
+            color: var(--primary);
+            border: 1px solid rgba(0, 255, 135, 0.3);
+            box-shadow: 0 0 16px rgba(0, 255, 135, 0.15);
+        }
+
+        .pulse-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 8px var(--primary);
+            animation: livePulse 1.8s infinite;
+        }
+
+        @keyframes livePulse {
+            0% { transform: scale(0.9); opacity: 0.7; }
+            50% { transform: scale(1.3); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.7; }
+        }
+
+        .deadline-timer-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--secondary);
+            border: 1px solid rgba(0, 229, 255, 0.25);
+        }
+
+        /* Hero Command Center */
+        .ai-command-hero {
+            background: linear-gradient(135deg, rgba(21, 27, 54, 0.95) 0%, rgba(10, 14, 34, 0.98) 100%);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--radius-xl);
+            padding: 24px 28px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-subtle);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-hero-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .hero-title-group {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .hero-robot-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(0, 255, 135, 0.2) 0%, rgba(0, 229, 255, 0.2) 100%);
+            border: 1px solid var(--border-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            color: var(--primary);
+        }
+
+        .btn-ai-trigger {
+            background: linear-gradient(135deg, var(--primary) 0%, #00cc6a 100%);
+            color: #050b14;
+            font-weight: 800;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.92rem;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 18px rgba(0, 255, 135, 0.3);
+        }
+
+        .btn-ai-trigger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(0, 255, 135, 0.45);
+        }
+
+        /* KPI Strip */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .kpi-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .kpi-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .kpi-icon.green { background: rgba(0, 255, 135, 0.12); color: var(--primary); }
+        .kpi-icon.blue { background: rgba(0, 229, 255, 0.12); color: var(--secondary); }
+        .kpi-icon.purple { background: rgba(157, 78, 221, 0.12); color: var(--accent-purple); }
+        .kpi-icon.orange { background: rgba(255, 165, 2, 0.12); color: var(--warning); }
+
+        .kpi-meta h4 {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .kpi-val {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        /* Main 2-Column Grid */
+        .manager-main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 1080px) {
+            .manager-main-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Football Pitch */
+        .pitch-container {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-xl);
+            padding: 22px;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .pitch-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .formation-badge {
+            background: rgba(0, 255, 135, 0.12);
+            color: var(--primary);
+            border: 1px solid rgba(0, 255, 135, 0.3);
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .football-pitch {
+            background: linear-gradient(180deg, #09331f 0%, #062315 100%);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 24px 12px;
+            min-height: 480px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            position: relative;
+            box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .football-pitch::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: var(--pitch-lines);
+        }
+
+        .football-pitch::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            border: 2px solid var(--pitch-lines);
+            border-radius: 50%;
+        }
+
+        .pitch-row {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 2;
+            margin: 8px 0;
+        }
+
+        /* Player Pitch Card */
+        .player-card-pitch {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 76px;
+            text-align: center;
+            position: relative;
+        }
+
+        .shirt-wrapper {
+            position: relative;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 6px;
+            font-size: 18px;
+            color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .captain-badge {
+            position: absolute;
+            top: -4px;
+            right: -6px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ffd32a;
+            color: #000;
+            font-size: 11px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #000;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+        }
+
+        .player-name-tag {
+            background: rgba(10, 14, 30, 0.92);
+            color: var(--text-main);
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 3px 6px;
+            border-radius: 6px;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .player-sub-tag {
+            font-size: 0.65rem;
+            color: var(--secondary);
+            font-weight: 600;
+            margin-top: 1px;
+        }
+
+        /* Bench Row */
+        .bench-wrapper {
+            margin-top: 18px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 14px;
+            padding: 14px 18px;
+            border: 1px solid var(--border-glass);
+        }
+
+        .bench-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .bench-row {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        /* Right Panel: Pre-Deadline Probabilities & Audit */
+        .ai-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-xl);
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .card-title-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .card-title-bar h3 {
+            font-size: 1.05rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Probability Candidate Card */
+        .prob-candidate-card {
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border-glass);
+            background: var(--bg-surface-elevated);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .prob-candidate-card.top-choice {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(0, 255, 135, 0.08) 0%, rgba(21, 27, 54, 0.9) 100%);
+            box-shadow: 0 0 20px rgba(0, 255, 135, 0.12);
+        }
+
+        .prob-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .prob-bar-container {
+            width: 100%;
+            height: 7px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 999px;
+            overflow: hidden;
+            margin: 4px 0;
+        }
+
+        .prob-bar-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--secondary) 0%, var(--primary) 100%);
+        }
+
+        .transfer-exchange-box {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .exchange-player {
+            padding: 8px 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .exchange-player.out { background: rgba(255, 71, 87, 0.12); border: 1px solid rgba(255, 71, 87, 0.25); }
+        .exchange-player.in { background: rgba(0, 255, 135, 0.12); border: 1px solid rgba(0, 255, 135, 0.25); }
+
+        /* Executed Moves Timeline */
+        .timeline-item {
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.25);
+            border-left: 4px solid var(--primary);
+            margin-bottom: 10px;
+            font-size: 0.84rem;
+        }
+
+        .timeline-item.chip { border-left-color: var(--accent-purple); }
+
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            background: var(--bg-surface-elevated);
+            color: var(--primary);
+            border: 1px solid var(--border-glow);
+            padding: 14px 22px;
+            border-radius: 14px;
+            font-weight: 700;
+            box-shadow: 0 12px 36px rgba(0,0,0,0.6);
+            display: none;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-layout">
+    <!-- Top Header -->
+    <header class="app-header">
+        <div class="brand-logo">
+            <div class="logo-icon">
+                <i class="fa-solid fa-robot"></i>
+            </div>
+            <div>
+                <h1 class="brand-title">AI Autonomous Manager</h1>
+                <span style="font-size: 0.78rem; color: var(--text-muted);">100% Autonomous Bot for FPL Account #9765376</span>
+            </div>
+        </div>
+        <div class="header-status-strip">
+            <div class="live-status-pill">
+                <span class="pulse-dot"></span>
+                <span>100% LIVE AUTONOMOUS (Armed)</span>
+            </div>
+            <div class="deadline-timer-pill" id="deadlineLockinIndicator">
+                <i class="fa-regular fa-clock"></i>
+                <span id="headerLockinText">Auto-Executes 30m Before Deadline</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Command Center -->
+    <div class="ai-command-hero">
+        <div class="ai-hero-header">
+            <div class="hero-title-group">
+                <div class="hero-robot-avatar">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                <div>
+                    <h2 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 4px;">Tactical AI Manager Dashboard</h2>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">
+                        Autonomous A-to-Z control: xGI/90 simulations, injury scans, chip deployments, captaincy, and automated transfers 30m before deadline.
+                    </p>
+                </div>
+            </div>
+            <div>
+                <button class="btn-ai-trigger" onclick="runAIManagerCycleNow()">
+                    <i class="fa-solid fa-bolt"></i> Run AI Cycle Now
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Summary Row -->
+    <div class="kpi-row">
+        <div class="kpi-card">
+            <div class="kpi-icon green"><i class="fa-solid fa-id-card"></i></div>
+            <div class="kpi-meta">
+                <h4>AI Team Name</h4>
+                <div class="kpi-val" id="teamNameVal">Ai AHLA SHBB</div>
+                <span id="managerNameVal" style="font-size: 0.74rem; color: var(--text-muted);">Manager: Ai sekelalah (ID: 9765376)</span>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon blue"><i class="fa-regular fa-hourglass-half"></i></div>
+            <div class="kpi-meta">
+                <h4 id="deadlineGWLabel">GW2 Deadline</h4>
+                <div class="kpi-val" id="timeRemainingVal">--h --m</div>
+                <span id="lockinTimerVal" style="font-size: 0.74rem; color: var(--secondary);">AI Action: 30m before lock</span>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon purple"><i class="fa-solid fa-vault"></i></div>
+            <div class="kpi-meta">
+                <h4>Bank & Free Transfers</h4>
+                <div class="kpi-val" id="bankFTVal">£0.2M • 1 FT</div>
+                <span style="font-size: 0.74rem; color: var(--text-muted);">Max -4 hit allowed if xP > 5</span>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon orange"><i class="fa-solid fa-trophy"></i></div>
+            <div class="kpi-meta">
+                <h4>Current GW Points</h4>
+                <div class="kpi-val" id="pointsRankVal">-- pts</div>
+                <span id="overallRankVal" style="font-size: 0.74rem; color: var(--text-muted);">Overall Total: -- pts</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Manager Layout: Pitch & Transfer Probabilities -->
+    <div class="manager-main-grid">
+        <!-- Left: Starting XI Football Pitch -->
+        <div class="pitch-container">
+            <div class="pitch-header">
+                <div>
+                    <h3 style="font-size: 1.1rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-shield-halved" style="color: var(--primary);"></i> Starting XI Lineup
+                    </h3>
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">Optimized for upcoming Gameweek</span>
+                </div>
+                <span class="formation-badge" id="formationBadge">3-5-2</span>
+            </div>
+
+            <div class="football-pitch" id="pitchField">
+                <div style="text-align: center; color: var(--text-muted); margin: auto;">
+                    <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i>
+                    <p>Loading AI Squad from FPL Account #9765376...</p>
+                </div>
+            </div>
+
+            <!-- Priority Bench -->
+            <div class="bench-wrapper">
+                <div class="bench-title">
+                    <span><i class="fa-solid fa-chair"></i> Priority Tactical Bench</span>
+                    <span style="color: var(--primary);">Auto-Sub 1 ➔ Sub 2 ➔ Sub 3</span>
+                </div>
+                <div class="bench-row" id="benchField"></div>
+            </div>
+        </div>
+
+        <!-- Right: Pre-Deadline Transfer Probabilities (%) & Decision Feed -->
+        <div>
+            <!-- Transfer Probability Matrix -->
+            <div class="ai-card">
+                <div class="card-title-bar">
+                    <div>
+                        <h3><i class="fa-solid fa-chart-pie" style="color: var(--primary);"></i> Pre-Deadline Transfer Options (%)</h3>
+                        <span style="font-size: 0.75rem; color: var(--text-muted);">AI ranks moves by expected points gain; executes top option 30m before deadline.</span>
+                    </div>
+                </div>
+
+                <div id="transferProbabilitiesList">
+                    <div style="text-align: center; padding: 24px; color: var(--text-muted); font-size: 0.85rem;">
+                        <i class="fa-solid fa-robot fa-spin" style="color: var(--primary); margin-right: 6px;"></i> Calculating transfer probabilities...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Captaincy & Chip Status Card -->
+            <div class="ai-card">
+                <div class="card-title-bar">
+                    <h3><i class="fa-solid fa-crown" style="color: #ffd32a;"></i> Captaincy & Autonomous Chips</h3>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;" id="captaincyChipBox">
+                    <!-- Injected dynamically -->
+                </div>
+            </div>
+
+            <!-- Executed Pre-Deadline Moves Timeline -->
+            <div class="ai-card">
+                <div class="card-title-bar">
+                    <h3><i class="fa-solid fa-list-check" style="color: var(--secondary);"></i> Executed Pre-Deadline Moves</h3>
+                    <button class="formation-badge" style="background: rgba(255,255,255,0.06); border-color: var(--border-glass); cursor: pointer;" onclick="loadAIStatus()">
+                        Refresh
+                    </button>
+                </div>
+                <div id="executedAuditTimeline">
+                    <div style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.82rem;">
+                        Loading executed move history...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notice -->
+<div class="toast" id="toastNotice">Notification</div>
+
+<script>
+    function showToast(msg) {
+        const t = document.getElementById('toastNotice');
+        t.innerText = msg;
+        t.style.display = 'block';
+        setTimeout(() => { t.style.display = 'none'; }, 3500);
+    }
+
+    async function loadAIStatus() {
+        try {
+            const res = await fetch('/api/ai-manager/status');
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to fetch status');
+
+            // Header & KPIs
+            document.getElementById('teamNameVal').innerText = data.team_name || 'Ai AHLA SHBB';
+            document.getElementById('managerNameVal').innerText = `Manager: ${data.manager_name || 'Ai sekelalah'} (ID: ${data.team_id || '9765376'})`;
+            document.getElementById('bankFTVal').innerText = `£${(data.bank || 0.2).toFixed(1)}M • ${data.free_transfers || 1} FT`;
+            const gwPts = data.gw_points !== undefined ? data.gw_points : (data.overall_points || 0);
+            const totalPts = data.overall_points || 0;
+            document.getElementById('pointsRankVal').innerText = `${gwPts} pts`;
+            document.getElementById('overallRankVal').innerText = data.overall_rank 
+                ? `Overall Total: ${totalPts} pts • Rank: #${data.overall_rank.toLocaleString()}` 
+                : `Overall Total: ${totalPts} pts`;
+
+            if (data.deadline) {
+                document.getElementById('deadlineGWLabel').innerText = `GW${data.deadline.gameweek || data.next_gw} Deadline`;
+                document.getElementById('timeRemainingVal').innerText = data.deadline.time_remaining || '--h --m';
+                document.getElementById('headerLockinText').innerText = `Auto-Executes in GW${data.deadline.gameweek || data.next_gw} (30m before lock)`;
+            }
+
+            // Squad Pitch
+            if (data.starting_xi && data.starting_xi.length > 0) {
+                renderPitch(data.starting_xi, data.bench, data.captain?.id, data.vice_captain?.id);
+            }
+
+            // Captain & Chip Box
+            renderCaptaincyChipBox(data.captain, data.vice_captain, data.chips_used);
+
+            // Pre-Deadline Transfer Probabilities
+            if (data.pre_deadline_transfers && data.pre_deadline_transfers.candidates) {
+                renderTransferProbabilities(data.pre_deadline_transfers.candidates);
+            }
+
+            // Executed Audit Timeline
+            renderAuditTimeline(data.recent_logs);
+
+        } catch (err) {
+            console.error('Error loading status:', err);
+        }
+    }
+
+    function renderPitch(startingXI, bench, captainId, viceCaptainId) {
+        const pitch = document.getElementById('pitchField');
+        pitch.innerHTML = '';
+
+        const gkps = (startingXI || []).filter(p => p.element_type === 1 || p.position_short === 'GKP');
+        const defs = (startingXI || []).filter(p => p.element_type === 2 || p.position_short === 'DEF');
+        const mids = (startingXI || []).filter(p => p.element_type === 3 || p.position_short === 'MID');
+        const fwds = (startingXI || []).filter(p => p.element_type === 4 || p.position_short === 'FWD');
+
+        document.getElementById('formationBadge').innerText = `${defs.length}-${mids.length}-${fwds.length}`;
+
+        [gkps, defs, mids, fwds].forEach(rowPlayers => {
+            if (rowPlayers.length === 0) return;
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'pitch-row';
+            rowPlayers.forEach(p => {
+                const card = createPitchCard(p, p.id === captainId, p.id === viceCaptainId);
+                rowDiv.appendChild(card);
+            });
+            pitch.appendChild(rowDiv);
+        });
+
+        const benchField = document.getElementById('benchField');
+        benchField.innerHTML = '';
+        (bench || []).forEach(p => {
+            benchField.appendChild(createPitchCard(p, false, false));
+        });
+    }
+
+    function createPitchCard(p, isCap, isVice) {
+        const div = document.createElement('div');
+        div.className = 'player-card-pitch';
+
+        const badgeHtml = isCap 
+            ? `<span class="captain-badge">C</span>` 
+            : (isVice ? `<span class="captain-badge" style="background:#00e5ff;">V</span>` : '');
+
+        const iconType = p.position_short === 'GKP' ? 'fa-hands' : 'fa-shirt';
+
+        div.innerHTML = `
+            <div class="shirt-wrapper">
+                <i class="fa-solid ${iconType}"></i>
+                ${badgeHtml}
+            </div>
+            <div class="player-name-tag">${p.web_name || 'Player'}</div>
+            <div class="player-sub-tag">£${parseFloat(p.cost || 0).toFixed(1)}M • ${p.team_short || ''}</div>
+        `;
+        return div;
+    }
+
+    function renderCaptaincyChipBox(captain, viceCaptain, chipsUsed) {
+        const box = document.getElementById('captaincyChipBox');
+        box.innerHTML = '';
+
+        const capName = captain?.web_name || 'Palmer';
+        const viceName = viceCaptain?.web_name || 'Cherki';
+
+        box.innerHTML = `
+            <div style="background: rgba(255,211,42,0.08); border: 1px solid rgba(255,211,42,0.25); border-radius: 12px; padding: 12px;">
+                <div style="font-size: 0.72rem; color: #ffd32a; font-weight: 700; text-transform: uppercase;">👑 Active Captain</div>
+                <div style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 4px 0;">${capName} (2×)</div>
+                <div style="font-size: 0.74rem; color: var(--text-muted);">Vice: ${viceName}</div>
+            </div>
+            <div style="background: rgba(157,78,221,0.08); border: 1px solid rgba(157,78,221,0.25); border-radius: 12px; padding: 12px;">
+                <div style="font-size: 0.72rem; color: var(--accent-purple); font-weight: 700; text-transform: uppercase;">⚡ Chip Strategy</div>
+                <div style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 4px 0;">Wildcard 1 Ready</div>
+                <div style="font-size: 0.74rem; color: var(--text-muted);">2 Wildcards (GW1-19, GW20-38)</div>
+            </div>
+        `;
+    }
+
+    function renderTransferProbabilities(candidates) {
+        const list = document.getElementById('transferProbabilitiesList');
+        list.innerHTML = '';
+
+        if (!candidates || candidates.length === 0) {
+            list.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-muted);">No candidate transfers required. Squad is optimal.</div>`;
+            return;
+        }
+
+        candidates.forEach((cand, idx) => {
+            const isTop = (idx === 0);
+            const card = document.createElement('div');
+            card.className = `prob-candidate-card ${isTop ? 'top-choice' : ''}`;
+
+            const topBadge = isTop ? `<span style="background: var(--primary); color: #000; font-size: 0.7rem; font-weight: 800; padding: 2px 8px; border-radius: 6px;">⚡ TOP CHOICE (Will Execute 30m before lock)</span>` : '';
+
+            card.innerHTML = `
+                <div class="prob-header">
+                    <div>
+                        <span style="font-weight: 800; font-size: 0.92rem; color: var(--text-main);">Option #${idx+1}: ${cand.in_player}</span>
+                        ${topBadge ? `<div style="margin-top: 4px;">${topBadge}</div>` : ''}
+                    </div>
+                    <div style="text-align: right;">
+                        <span style="font-size: 1.15rem; font-weight: 900; color: ${isTop ? 'var(--primary)' : 'var(--secondary)'};">${cand.probability_pct}%</span>
+                        <div style="font-size: 0.68rem; color: var(--text-muted);">Confidence</div>
+                    </div>
+                </div>
+
+                <div class="prob-bar-container">
+                    <div class="prob-bar-fill" style="width: ${cand.probability_pct}%;"></div>
+                </div>
+
+                ${cand.type === 'TRANSFER' ? `
+                    <div class="transfer-exchange-box">
+                        <div class="exchange-player out">
+                            <div style="font-size: 0.65rem; color: #ff6b6b; font-weight: 700;">OUT</div>
+                            <div style="font-weight: 800; font-size: 0.88rem;">${cand.out_player}</div>
+                            <div style="font-size: 0.7rem; color: var(--text-muted);">${cand.out_team}</div>
+                        </div>
+                        <i class="fa-solid fa-arrow-right" style="color: var(--primary);"></i>
+                        <div class="exchange-player in">
+                            <div style="font-size: 0.65rem; color: var(--primary); font-weight: 700;">IN</div>
+                            <div style="font-weight: 800; font-size: 0.88rem;">${cand.in_player}</div>
+                            <div style="font-size: 0.7rem; color: var(--secondary);">${cand.in_team} • £${parseFloat(cand.in_cost || 0).toFixed(1)}M</div>
+                        </div>
+                    </div>
+                ` : `
+                    <div style="font-size: 0.8rem; color: var(--text-muted); padding: 8px 12px; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                        <i class="fa-solid fa-shield-halved" style="color: var(--secondary); margin-right: 6px;"></i> ${cand.reason}
+                    </div>
+                `}
+
+                <div style="font-size: 0.74rem; color: var(--text-muted);">
+                    <i class="fa-solid fa-microchip" style="color: var(--primary); margin-right: 4px;"></i> ${cand.reason}
+                </div>
+            `;
+            list.appendChild(card);
+        });
+    }
+
+    function renderAuditTimeline(logs) {
+        const timeline = document.getElementById('executedAuditTimeline');
+        timeline.innerHTML = '';
+
+        if (!logs || logs.length === 0) {
+            timeline.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.82rem;">No previous gameweek moves executed yet.</div>`;
+            return;
+        }
+
+        logs.forEach(log => {
+            const div = document.createElement('div');
+            div.className = `timeline-item ${log.type === 'CHIP' ? 'chip' : ''}`;
+            div.innerHTML = `
+                <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                    <strong style="color: var(--text-main);">${log.title}</strong>
+                    <span style="font-size: 0.72rem; color: var(--text-muted);">${log.timestamp}</span>
+                </div>
+                <div style="color: var(--text-muted); font-size: 0.8rem;">${log.summary}</div>
+            `;
+            timeline.appendChild(div);
+        });
+    }
+
+    async function runAIManagerCycleNow() {
+        showToast('🤖 AI Manager: Executing deep research cycle for team #9765376...');
+        try {
+            const res = await fetch('/api/ai-manager/run-cycle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ dry_run: false, max_hits: -4, force_squad: false })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Execution failed');
+
+            showToast(`✅ AI Management Cycle Executed for GW${data.gameweek}!`);
+            loadAIStatus();
+        } catch (err) {
+            showToast(`Error: ${err.message}`);
+        }
+    }
+
+    // Auto-load on startup
+    window.addEventListener('DOMContentLoaded', () => {
+        loadAIStatus();
+    });
+</script>
+
+</body>
+</html>
