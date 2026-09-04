@@ -1282,56 +1282,103 @@ class FPLAutonomousAgent:
     def _execute_live_moves(self, transfers, lineup, gameweek, active_chip=None):
         """Helper to post transfers and lineup to live FPL endpoints with chip support"""
         try:
+            from playwright.sync_api import sync_playwright
+            
             is_wildcard = (active_chip == 'wildcard')
             is_freehit = (active_chip == 'freehit')
             lineup_chip = active_chip if active_chip in ['3xc', 'bboost'] else None
             
-            # Transfers API payload: POST /api/transfers/
-            if transfers and self.auth_token:
-                t_payload = {
-                    "chips": None,
-                    "entry": int(self.team_id),
-                    "event": int(gameweek),
-                    "transfers": [
-                        {
-                            "element_in": t['in_id'],
-                            "element_out": t['out_id'],
-                            "purchase_price": int(t.get('in_cost', 50) * 10),
-                            "selling_price": int(t.get('out_cost', 50) * 10)
-                        } for t in transfers
-                    ],
-                    "wildcard": is_wildcard,
-                    "freehit": is_freehit
-                }
-                res = self.session.post(f"{self.base_url}/transfers/", json=t_payload, timeout=15)
-                print(f"Live Transfer Submission Status: {res.status_code}")
-                
-            # Lineup API payload: POST /api/my-team/{team_id}/
-            if lineup and self.auth_token:
-                picks_payload = []
-                # Starting XI (pos 1 to 11)
-                for idx, p in enumerate(lineup['starting_xi'], 1):
-                    picks_payload.append({
-                        "element": int(p['id']),
-                        "position": idx,
-                        "is_captain": (p['id'] == lineup['captain'].get('id')),
-                        "is_vice_captain": (p['id'] == lineup['vice_captain'].get('id'))
-                    })
-                # Bench (pos 12 to 15)
-                for idx, p in enumerate(lineup['bench'], 12):
-                    picks_payload.append({
-                        "element": int(p['id']),
-                        "position": idx,
-                        "is_captain": False,
-                        "is_vice_captain": False
-                    })
-                    
-                l_res = self.session.post(
-                    f"{self.base_url}/my-team/{self.team_id}/",
-                    json={"picks": picks_payload, "chip": lineup_chip},
-                    timeout=15
+            target_email = self.email or os.getenv('FPL_EMAIL')
+            target_password = self.password or os.getenv('FPL_PASSWORD')
+            
+            with sync_playwright() as p:
+                browser = p.chromium.launch(headless=True)
+                context = browser.new_context(
+                    user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
                 )
-                print(f"Live Lineup Submission Status: {l_res.status_code}")
+                page = context.new_page()
+                page.goto('https://fantasy.premierleague.com/my-team', timeout=30000)
+                page.wait_for_timeout(2000)
+                
+                try:
+                    accept_btn = page.locator('button:has-text("Accept All"), button#onetrust-accept-btn-handler')
+                    if accept_btn.count() > 0:
+                        accept_btn.first.click()
+                        page.wait_for_timeout(1000)
+                except Exception:
+                    pass
+                    
+                login_btn = page.locator('a:has-text("Log in"), button:has-text("Log in")')
+                if login_btn.count() > 0:
+                    login_btn.first.click()
+                    page.wait_for_timeout(3000)
+                    
+                email_input = page.locator('input[type="email"], input[placeholder*="email" i]')
+                pass_input = page.locator('input[type="password"]')
+                
+                if email_input.count() > 0 and pass_input.count() > 0:
+                    email_input.first.fill(target_email)
+                    pass_input.first.fill(target_password)
+                    page.wait_for_timeout(500)
+                    pass_input.first.press('Enter')
+                    page.wait_for_timeout(8000)
+                    
+                # 1. Execute Transfers if any
+                if transfers:
+                    t_payload = {
+                        "chips": None,
+                        "entry": int(self.team_id),
+                        "event": int(gameweek),
+                        "transfers": [
+                            {
+                                "element_in": t['in_id'],
+                                "element_out": t['out_id'],
+                                "purchase_price": int(t.get('in_cost', 50) * 10),
+                                "selling_price": int(t.get('out_cost', 50) * 10)
+                            } for t in transfers
+                        ],
+                        "wildcard": is_wildcard,
+                        "freehit": is_freehit
+                    }
+                    t_res = page.evaluate("""async (payload) => {
+                        const r = await fetch('/api/transfers/', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json', 'accept': 'application/json'},
+                            body: JSON.stringify(payload)
+                        });
+                        return {status: r.status, text: await r.text()};
+                    }""", t_payload)
+                    print(f"Live Transfer Submission Result: {t_res}")
+                    
+                # 2. Execute Lineup
+                if lineup:
+                    picks_payload = []
+                    for idx, pl in enumerate(lineup['starting_xi'], 1):
+                        picks_payload.append({
+                            "element": int(pl['id']),
+                            "position": idx,
+                            "is_captain": (pl['id'] == lineup['captain'].get('id')),
+                            "is_vice_captain": (pl['id'] == lineup['vice_captain'].get('id'))
+                        })
+                    for idx, pl in enumerate(lineup['bench'], 12):
+                        picks_payload.append({
+                            "element": int(pl['id']),
+                            "position": idx,
+                            "is_captain": False,
+                            "is_vice_captain": False
+                        })
+                        
+                    l_res = page.evaluate("""async (args) => {
+                        const r = await fetch(`/api/my-team/${args.tid}/`, {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json', 'accept': 'application/json'},
+                            body: JSON.stringify({picks: args.picks, chip: args.chip})
+                        });
+                        return {status: r.status, text: await r.text()};
+                    }""", {'tid': self.team_id, 'picks': picks_payload, 'chip': lineup_chip})
+                    print(f"Live Lineup Submission Result: {l_res}")
+                    
+                browser.close()
         except Exception as e:
             print(f"Live execution error: {e}")
 
