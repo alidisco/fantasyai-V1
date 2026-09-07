@@ -195,9 +195,12 @@ class FPLAnalyzer:
                     return min(38, event['id'] + 1)
         return 1
     
-    def get_fixture_details_next_5gw(self, team_id, current_gw):
+    def get_fixture_details_next_5gw(self, team_id, current_gw=None):
         if self.fixtures_data is None:
             return []
+        
+        if current_gw is None:
+            current_gw = self.get_next_gameweek()
         
         details = []
         for gw in range(current_gw, min(39, current_gw + 5)):
@@ -219,7 +222,7 @@ class FPLAnalyzer:
                 
                 details.append({
                     'gw': gw,
-                    'opponent': f"{opp_short} ({'H' if is_home else 'A'})",
+                    'opponent': opp_short,
                     'difficulty': diff,
                     'is_home': is_home
                 })
@@ -227,6 +230,7 @@ class FPLAnalyzer:
                 details.append({'gw': gw, 'opponent': 'TBD', 'difficulty': 3, 'is_home': True})
         
         return details
+
 
     def get_fixture_difficulty_next_5gw(self, team_id, current_gw):
         details = self.get_fixture_details_next_5gw(team_id, current_gw)
@@ -579,8 +583,9 @@ class FPLAnalyzer:
         pos_name, pos_short = pos_names.get(element_type, ('Midfielder', 'MID'))
         
         prediction = self.predict_player_points(player_id)
-        current_gw = self.get_current_gameweek()
-        fixtures_5gw = self.get_fixture_details_next_5gw(team_id, current_gw)
+        next_gw = self.get_next_gameweek()
+        fixtures_5gw = self.get_fixture_details_next_5gw(team_id, next_gw)
+
         
         def safe_num(v, default=0.0):
             try:

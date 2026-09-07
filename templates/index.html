@@ -1265,6 +1265,14 @@
         });
     }
 
+    function formatFixture(f) {
+        if (!f || !f.opponent) return 'TBD';
+        if (f.opponent === 'BLANK') return 'BLANK';
+        let opp = String(f.opponent).replace(/\s*\([HA]\)/gi, '').trim();
+        const ha = f.is_home ? 'H' : 'A';
+        return `${opp} (${ha})`;
+    }
+
     function createPlayerCard(p, isCap, isVice) {
         const div = document.createElement('div');
         div.className = 'fpl-player-card';
@@ -1287,8 +1295,7 @@
         let fdrClass = 'fdr-3';
         if (p.fixtures_next_5 && p.fixtures_next_5.length > 0) {
             const f = p.fixtures_next_5[0];
-            const ha = f.is_home ? 'H' : 'A';
-            fixtureText = `${f.opponent} (${ha})`;
+            fixtureText = formatFixture(f);
             fdrClass = `fdr-${f.difficulty || 3}`;
         }
 
@@ -1414,8 +1421,7 @@
 
             tbody.innerHTML = data.players.map(p => {
                 const fixHtml = (p.fixtures_next_5 || []).slice(0, 5).map(f => {
-                    const ha = f.is_home ? 'H' : 'A';
-                    return `<span class="mini-fdr-badge fdr-${f.difficulty || 3}">${f.opponent} (${ha})</span>`;
+                    return `<span class="mini-fdr-badge fdr-${f.difficulty || 3}">${formatFixture(f)}</span>`;
                 }).join('');
 
                 return `
@@ -1455,15 +1461,15 @@
 
         const fixDiv = document.getElementById('modalPlayerFixtures');
         fixDiv.innerHTML = (p.fixtures_next_5 || []).map(f => {
-            const ha = f.is_home ? 'H' : 'A';
             return `
                 <div style="background:var(--bg-surface-elevated); border:1px solid var(--border-glass); border-radius:var(--radius-sm); padding:6px 10px; text-align:center; min-width:70px;">
-                    <div style="font-size:0.7rem; color:var(--text-muted);">GW ${f.event || ''}</div>
-                    <div style="font-weight:800; font-size:0.85rem; color:#fff; margin:2px 0;">${f.opponent} (${ha})</div>
+                    <div style="font-size:0.7rem; color:var(--text-muted);">GW ${f.gw || f.event || ''}</div>
+                    <div style="font-weight:800; font-size:0.85rem; color:#fff; margin:2px 0;">${formatFixture(f)}</div>
                     <span class="mini-fdr-badge fdr-${f.difficulty || 3}">FDR ${f.difficulty || 3}</span>
                 </div>
             `;
         }).join('');
+
 
         const newsBox = document.getElementById('modalPlayerNewsBox');
         if (p.news) {
