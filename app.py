@@ -11,6 +11,7 @@ try:
 except ImportError:
     xgb = None
 
+from datetime import datetime
 import json
 import os
 import re
@@ -19,7 +20,29 @@ from itertools import combinations
 import warnings
 warnings.filterwarnings('ignore')
 
+def _sanitize(obj):
+    if isinstance(obj, dict):
+        return {str(k): _sanitize(v) for k, v in obj.items()}
+    elif isinstance(obj, (list, tuple, set)):
+        return [_sanitize(x) for x in obj]
+    elif isinstance(obj, (np.integer, int)):
+        return int(obj)
+    elif isinstance(obj, (np.floating, float)):
+        if np.isnan(obj) or np.isinf(obj):
+            return None
+        return float(obj)
+    elif isinstance(obj, (np.bool_, bool)):
+        return bool(obj)
+    elif isinstance(obj, (datetime, pd.Timestamp)):
+        return obj.isoformat()
+    elif obj is None:
+        return None
+    elif str(obj) in ('nan', 'None', '<NA>'):
+        return None
+    return obj
+
 app = Flask(__name__)
+
 
 class FPLAnalyzer:
     def __init__(self):
@@ -1563,7 +1586,7 @@ def analyze():
         # Calculate pre-deadline transfer candidates with % probabilities
         pre_deadline_transfers = ai_agent.get_pre_deadline_analysis(squad_cards, bank_budget, 1, next_gw)
         
-        return jsonify({
+        return jsonify(_sanitize({
             'team_id': team_id,
             'team_name': team_data.get('name', f'Team {team_id}'),
             'manager_name': f"{team_data.get('player_first_name', '')} {team_data.get('player_last_name', '')}".strip(),
@@ -1587,7 +1610,8 @@ def analyze():
             'bank': bank_budget,
             'bank_balance': bank_budget,
             'team_value': team_value
-        })
+        }))
+
 
         
     except Exception as e:
@@ -1966,7 +1990,7 @@ def get_predicted_players():
         else:
             results.sort(key=lambda x: x['predicted_points'], reverse=True)
             
-        return jsonify({'players': results[:60], 'total': len(results)})
+        return jsonify(_sanitize({'players': results[:60], 'total': len(results)}))
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -1976,9 +2000,10 @@ def get_player_details(player_id):
         card = analyzer.get_player_full_card(player_id)
         if not card:
             return jsonify({'error': 'Player not found'}), 404
-        return jsonify(card)
+        return jsonify(_sanitize(card))
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 
 def preload_data():
