@@ -2,35 +2,46 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Autonomous Manager (ID: 9765376) | FPL AI Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FPL AI Pro — Autonomous Fantasy Premier League Manager</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --bg-dark: #070913;
-            --bg-surface: #0e1224;
-            --bg-surface-elevated: #151b36;
-            --primary: #00ff87;
-            --primary-glow: rgba(0, 255, 135, 0.35);
-            --secondary: #00e5ff;
-            --accent-purple: #9d4edd;
-            --danger: #ff4757;
-            --warning: #ffa502;
+            --fpl-purple: #37003c;
+            --fpl-purple-dark: #240029;
+            --fpl-purple-surface: #1d0022;
+            --fpl-green: #00ff87;
+            --fpl-green-glow: rgba(0, 255, 135, 0.4);
+            --fpl-cyan: #02efff;
+            --fpl-pink: #e90052;
+            --fpl-yellow: #ffeb00;
+            --bg-dark: #090a16;
+            --bg-surface: #111427;
+            --bg-surface-elevated: #191e3b;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --text-dim: #64748b;
-            --border-glass: rgba(255, 255, 255, 0.08);
-            --border-glow: rgba(0, 255, 135, 0.25);
-            --pitch-green: #0a2e1d;
-            --pitch-lines: rgba(255, 255, 255, 0.14);
-            --radius-lg: 16px;
-            --radius-xl: 24px;
-            --shadow-subtle: 0 12px 32px rgba(0, 0, 0, 0.4);
-            --shadow-glow: 0 0 24px rgba(0, 255, 135, 0.2);
+            --border-glass: rgba(255, 255, 255, 0.09);
+            --border-fpl: rgba(0, 255, 135, 0.3);
+            
+            /* Official FPL FDR Difficulty Colors */
+            --fdr-1: #00ff87;
+            --fdr-2: #01fc7a;
+            --fdr-3: #e7e7e7;
+            --fdr-4: #ff1751;
+            --fdr-5: #80072d;
+            
+            --pitch-grass-1: #0e4b2d;
+            --pitch-grass-2: #0a3d24;
+            --pitch-lines: rgba(255, 255, 255, 0.22);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.45);
         }
 
         * {
@@ -38,6 +49,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -46,381 +58,472 @@
             min-height: 100vh;
             overflow-x: hidden;
             background-image: 
-                radial-gradient(circle at 15% 10%, rgba(0, 255, 135, 0.06) 0%, transparent 40%),
-                radial-gradient(circle at 85% 90%, rgba(157, 78, 221, 0.06) 0%, transparent 40%),
-                radial-gradient(circle at 50% 50%, rgba(0, 229, 255, 0.03) 0%, transparent 60%);
-            padding-bottom: 60px;
+                radial-gradient(circle at 10% 5%, rgba(55, 0, 60, 0.6) 0%, transparent 50%),
+                radial-gradient(circle at 90% 95%, rgba(0, 255, 135, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(2, 239, 255, 0.04) 0%, transparent 60%);
+            padding-bottom: 90px;
         }
 
-        .app-layout {
-            max-width: 1440px;
+        /* App Container */
+        .app-container {
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 24px 28px;
+            padding: 16px;
         }
 
-        /* Top Header */
-        .app-header {
+        @media (min-width: 768px) {
+            .app-container { padding: 24px 32px; }
+        }
+
+        /* FPL Brand Header Bar */
+        .fpl-navbar {
+            background: linear-gradient(135deg, var(--fpl-purple) 0%, #1a001d 100%);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            padding: 16px 22px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 16px 24px;
-            background: rgba(14, 18, 36, 0.85);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--border-glass);
-            border-radius: var(--radius-lg);
-            margin-bottom: 24px;
-            box-shadow: var(--shadow-subtle);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.5), 0 0 20px rgba(0, 255, 135, 0.1);
+            position: relative;
+            overflow: hidden;
         }
 
-        .brand-logo {
+        .fpl-navbar::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -20%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(0,255,135,0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .brand-section {
             display: flex;
             align-items: center;
             gap: 14px;
+            z-index: 1;
         }
 
-        .logo-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        .brand-logo-badge {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--fpl-green) 0%, var(--fpl-cyan) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
-            color: #000;
-            box-shadow: var(--shadow-glow);
+            font-size: 24px;
+            color: var(--fpl-purple);
+            box-shadow: 0 0 20px var(--fpl-green-glow);
         }
 
-        .brand-title {
+        .brand-text h1 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.35rem;
+            font-size: 1.4rem;
             font-weight: 700;
             letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #fff 40%, var(--primary) 100%);
+            background: linear-gradient(135deg, #ffffff 40%, var(--fpl-green) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            line-height: 1.2;
         }
 
-        .header-status-strip {
+        .brand-text p {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .nav-status-group {
             display: flex;
             align-items: center;
-            gap: 14px;
-            flex-wrap: wrap;
+            gap: 12px;
+            z-index: 1;
         }
 
-        .live-status-pill {
+        .autopilot-pill {
             display: inline-flex;
             align-items: center;
             gap: 8px;
             padding: 8px 16px;
             border-radius: 999px;
-            font-size: 0.82rem;
-            font-weight: 700;
             background: rgba(0, 255, 135, 0.12);
-            color: var(--primary);
-            border: 1px solid rgba(0, 255, 135, 0.3);
-            box-shadow: 0 0 16px rgba(0, 255, 135, 0.15);
+            border: 1px solid var(--fpl-green);
+            color: var(--fpl-green);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .pulse-dot {
             width: 9px;
             height: 9px;
             border-radius: 50%;
-            background: var(--primary);
-            box-shadow: 0 0 8px var(--primary);
-            animation: livePulse 1.8s infinite;
+            background-color: var(--fpl-green);
+            box-shadow: 0 0 10px var(--fpl-green);
+            animation: livePulse 1.8s infinite ease-in-out;
         }
 
         @keyframes livePulse {
-            0% { transform: scale(0.9); opacity: 0.7; }
-            50% { transform: scale(1.3); opacity: 1; }
-            100% { transform: scale(0.9); opacity: 0.7; }
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.4); opacity: 0.4; }
         }
 
-        .deadline-timer-pill {
-            display: inline-flex;
+        /* Top Manager Summary Stats Strip */
+        .manager-summary-strip {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            padding: 14px 18px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--border-fpl);
+        }
+
+        .summary-card .label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .summary-card .value {
+            font-size: 1.35rem;
+            font-weight: 800;
+            font-family: 'Space Grotesk', sans-serif;
+            color: #fff;
+            margin-top: 4px;
+        }
+
+        .summary-card .sub-value {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-top: 2px;
+        }
+
+        .highlight-green { color: var(--fpl-green) !important; }
+        .highlight-cyan { color: var(--fpl-cyan) !important; }
+        .highlight-pink { color: var(--fpl-pink) !important; }
+        .highlight-yellow { color: var(--fpl-yellow) !important; }
+
+        /* Navigation Tab Switcher */
+        .fpl-tab-bar {
+            display: flex;
             align-items: center;
             gap: 8px;
-            padding: 8px 16px;
-            border-radius: 999px;
-            font-size: 0.82rem;
-            font-weight: 600;
-            background: rgba(0, 229, 255, 0.1);
-            color: var(--secondary);
-            border: 1px solid rgba(0, 229, 255, 0.25);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-glass);
+            padding: 6px;
+            border-radius: var(--radius-md);
+            margin-bottom: 20px;
+            overflow-x: auto;
+            scrollbar-width: none;
         }
 
-        /* Hero Command Center */
-        .ai-command-hero {
-            background: linear-gradient(135deg, rgba(21, 27, 54, 0.95) 0%, rgba(10, 14, 34, 0.98) 100%);
-            border: 1px solid var(--border-glow);
-            border-radius: var(--radius-xl);
-            padding: 24px 28px;
-            margin-bottom: 24px;
-            box-shadow: var(--shadow-subtle);
+        .fpl-tab-bar::-webkit-scrollbar { display: none; }
+
+        .fpl-tab-btn {
+            flex: 1;
+            min-width: 140px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px 18px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+        }
+
+        .fpl-tab-btn.active {
+            background: linear-gradient(135deg, var(--fpl-purple) 0%, #4a0050 100%);
+            color: var(--fpl-green);
+            border: 1px solid var(--border-fpl);
+            box-shadow: 0 4px 15px rgba(0, 255, 135, 0.15);
+        }
+
+        .tab-pane {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 2-Column Desktop Grid */
+        .main-dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 1024px) {
+            .main-dashboard-grid {
+                grid-template-columns: 1.15fr 0.85fr;
+            }
+        }
+
+        /* Pitch Container (Official FPL Stadium Experience) */
+        .pitch-container {
+            background: linear-gradient(180deg, #072e1c 0%, #031c11 100%);
+            border: 2px solid rgba(0, 255, 135, 0.25);
+            border-radius: var(--radius-lg);
+            padding: 20px 14px;
             position: relative;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), inset 0 0 50px rgba(0, 0, 0, 0.5);
             overflow: hidden;
         }
 
-        .ai-hero-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        .hero-title-group {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .hero-robot-avatar {
-            width: 56px;
-            height: 56px;
-            border-radius: 16px;
-            background: linear-gradient(135deg, rgba(0, 255, 135, 0.2) 0%, rgba(0, 229, 255, 0.2) 100%);
-            border: 1px solid var(--border-glow);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 26px;
-            color: var(--primary);
-        }
-
-        .btn-ai-trigger {
-            background: linear-gradient(135deg, var(--primary) 0%, #00cc6a 100%);
-            color: #050b14;
-            font-weight: 800;
-            border: none;
-            padding: 12px 24px;
+        /* Realistic Pitch Mowing Stripes & Markings */
+        .pitch-surface {
+            position: relative;
+            min-height: 560px;
+            border: 2px solid var(--pitch-lines);
             border-radius: 12px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.92rem;
-            transition: all 0.25s ease;
-            box-shadow: 0 4px 18px rgba(0, 255, 135, 0.3);
-        }
-
-        .btn-ai-trigger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 24px rgba(0, 255, 135, 0.45);
-        }
-
-        /* KPI Strip */
-        .kpi-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .kpi-card {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-glass);
-            border-radius: var(--radius-lg);
-            padding: 18px 20px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            box-shadow: var(--shadow-subtle);
-        }
-
-        .kpi-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-
-        .kpi-icon.green { background: rgba(0, 255, 135, 0.12); color: var(--primary); }
-        .kpi-icon.blue { background: rgba(0, 229, 255, 0.12); color: var(--secondary); }
-        .kpi-icon.purple { background: rgba(157, 78, 221, 0.12); color: var(--accent-purple); }
-        .kpi-icon.orange { background: rgba(255, 165, 2, 0.12); color: var(--warning); }
-
-        .kpi-meta h4 {
-            font-size: 0.76rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-
-        .kpi-val {
-            font-size: 1.25rem;
-            font-weight: 800;
-            color: var(--text-main);
-        }
-
-        /* Main 2-Column Grid */
-        .manager-main-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-        }
-
-        @media (max-width: 1080px) {
-            .manager-main-grid { grid-template-columns: 1fr; }
-        }
-
-        /* Football Pitch */
-        .pitch-container {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-glass);
-            border-radius: var(--radius-xl);
-            padding: 22px;
-            box-shadow: var(--shadow-subtle);
-        }
-
-        .pitch-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .formation-badge {
-            background: rgba(0, 255, 135, 0.12);
-            color: var(--primary);
-            border: 1px solid rgba(0, 255, 135, 0.3);
-            padding: 4px 12px;
-            border-radius: 999px;
-            font-size: 0.8rem;
-            font-weight: 700;
-        }
-
-        .football-pitch {
-            background: linear-gradient(180deg, #09331f 0%, #062315 100%);
-            border: 2px solid rgba(255, 255, 255, 0.15);
-            border-radius: 16px;
-            padding: 24px 12px;
-            min-height: 480px;
+            background: repeating-linear-gradient(
+                0deg,
+                var(--pitch-grass-1),
+                var(--pitch-grass-1) 50px,
+                var(--pitch-grass-2) 50px,
+                var(--pitch-grass-2) 100px
+            );
             display: flex;
             flex-direction: column;
             justify-content: space-around;
-            position: relative;
-            box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.5);
+            padding: 18px 8px;
         }
 
-        .football-pitch::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 10%;
-            right: 10%;
-            height: 2px;
-            background: var(--pitch-lines);
-        }
-
-        .football-pitch::after {
+        /* Pitch Center Circle */
+        .pitch-surface::before {
             content: '';
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 100px;
-            height: 100px;
+            width: 140px;
+            height: 140px;
             border: 2px solid var(--pitch-lines);
             border-radius: 50%;
+            pointer-events: none;
         }
 
+        /* Pitch Halfway Line */
+        .pitch-surface::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--pitch-lines);
+            pointer-events: none;
+        }
+
+        /* Pitch Rows */
         .pitch-row {
             display: flex;
             justify-content: space-around;
             align-items: center;
+            position: relative;
             z-index: 2;
-            margin: 8px 0;
+            margin: 6px 0;
         }
 
-        /* Player Pitch Card */
-        .player-card-pitch {
+        /* Authentic FPL Player Pitch Card */
+        .fpl-player-card {
             display: flex;
             flex-direction: column;
             align-items: center;
             width: 76px;
-            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s ease, filter 0.2s ease;
             position: relative;
+            text-align: center;
         }
 
-        .shirt-wrapper {
+        @media (min-width: 480px) {
+            .fpl-player-card { width: 88px; }
+        }
+
+        .fpl-player-card:hover {
+            transform: translateY(-4px) scale(1.05);
+            z-index: 10;
+        }
+
+        .shirt-box {
             position: relative;
             width: 44px;
             height: 44px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.4);
-            border: 2px solid var(--border-glass);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 6px;
-            font-size: 18px;
-            color: var(--primary);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            font-size: 28px;
+            color: #fff;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6));
         }
 
-        .captain-badge {
+        .captain-crown {
             position: absolute;
             top: -4px;
             right: -6px;
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: #ffd32a;
-            color: #000;
-            font-size: 11px;
+            background: #000;
+            color: #ffd700;
             font-weight: 900;
+            font-size: 0.7rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid #000;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
         }
 
-        .player-name-tag {
-            background: rgba(10, 14, 30, 0.92);
-            color: var(--text-main);
-            font-size: 0.72rem;
+        .vice-crown {
+            position: absolute;
+            top: -4px;
+            right: -6px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #000;
+            color: var(--fpl-cyan);
+            font-weight: 900;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--fpl-cyan);
+        }
+
+        .injury-badge {
+            position: absolute;
+            bottom: -2px;
+            left: -4px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--fpl-pink);
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #fff;
+        }
+
+        /* Player Details Labels */
+        .player-name-plate {
+            background: #37003c;
+            color: #fff;
+            font-size: 0.74rem;
             font-weight: 700;
             padding: 3px 6px;
-            border-radius: 6px;
+            border-radius: 4px 4px 0 0;
             width: 100%;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
-        .player-sub-tag {
+        /* Predicted Points Pill (Highlight Feature) */
+        .player-xp-pill {
+            background: #00ff87;
+            color: #000;
+            font-size: 0.7rem;
+            font-weight: 900;
+            padding: 2px 4px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            letter-spacing: -0.2px;
+        }
+
+        /* Next Fixture & FDR Pill */
+        .player-fixture-pill {
+            background: #192038;
+            color: #fff;
             font-size: 0.65rem;
-            color: var(--secondary);
-            font-weight: 600;
-            margin-top: 1px;
+            font-weight: 700;
+            padding: 2px 4px;
+            border-radius: 0 0 4px 4px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
         }
 
-        /* Bench Row */
-        .bench-wrapper {
-            margin-top: 18px;
-            background: rgba(0, 0, 0, 0.25);
-            border-radius: 14px;
-            padding: 14px 18px;
-            border: 1px solid var(--border-glass);
+        .fdr-badge {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
         }
 
-        .bench-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
+        .fdr-2 { background-color: var(--fdr-2); color: #000; }
+        .fdr-3 { background-color: var(--fdr-3); color: #000; }
+        .fdr-4 { background-color: var(--fdr-4); color: #fff; }
+        .fdr-5 { background-color: var(--fdr-5); color: #fff; }
+
+        /* Bench Section */
+        .bench-container {
+            background: rgba(14, 18, 36, 0.9);
+            border-top: 2px solid rgba(0, 255, 135, 0.2);
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+            padding: 14px 10px;
+            margin-top: 10px;
+        }
+
+        .bench-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.78rem;
             font-weight: 700;
             color: var(--text-muted);
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 0 8px;
         }
 
         .bench-row {
@@ -429,286 +532,661 @@
             align-items: center;
         }
 
-        /* Right Panel: Pre-Deadline Probabilities & Audit */
-        .ai-card {
+        /* Standard AI Content Card */
+        .fpl-card {
             background: var(--bg-surface);
             border: 1px solid var(--border-glass);
-            border-radius: var(--radius-xl);
-            padding: 22px;
+            border-radius: var(--radius-lg);
+            padding: 20px;
             margin-bottom: 20px;
-            box-shadow: var(--shadow-subtle);
+            box-shadow: var(--shadow-card);
         }
 
-        .card-title-bar {
+        .card-header-flex {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
             margin-bottom: 16px;
+            border-bottom: 1px solid var(--border-glass);
+            padding-bottom: 12px;
         }
 
-        .card-title-bar h3 {
-            font-size: 1.05rem;
+        .card-header-flex h3 {
+            font-size: 1.1rem;
             font-weight: 800;
+            font-family: 'Space Grotesk', sans-serif;
+            color: #fff;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        /* Probability Candidate Card */
-        .prob-candidate-card {
-            border-radius: 14px;
+        /* Transfer Probability Candidate Card */
+        .transfer-cand-card {
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
             padding: 14px 16px;
             margin-bottom: 12px;
-            border: 1px solid var(--border-glass);
-            background: var(--bg-surface-elevated);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            position: relative;
-            overflow: hidden;
+            transition: border-color 0.2s ease;
         }
 
-        .prob-candidate-card.top-choice {
-            border-color: var(--primary);
-            background: linear-gradient(135deg, rgba(0, 255, 135, 0.08) 0%, rgba(21, 27, 54, 0.9) 100%);
-            box-shadow: 0 0 20px rgba(0, 255, 135, 0.12);
+        .transfer-cand-card.top-choice {
+            border: 1.5px solid var(--fpl-green);
+            background: linear-gradient(135deg, rgba(0, 255, 135, 0.06) 0%, var(--bg-surface-elevated) 100%);
+            box-shadow: 0 4px 20px rgba(0, 255, 135, 0.12);
         }
 
-        .prob-header {
+        .cand-header-row {
             display: flex;
+            align-items: center;
             justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .cand-players-transfer {
+            display: flex;
             align-items: center;
-        }
-
-        .prob-bar-container {
-            width: 100%;
-            height: 7px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 999px;
-            overflow: hidden;
-            margin: 4px 0;
-        }
-
-        .prob-bar-fill {
-            height: 100%;
-            border-radius: 999px;
-            background: linear-gradient(90deg, var(--secondary) 0%, var(--primary) 100%);
-        }
-
-        .transfer-exchange-box {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
             gap: 10px;
-            align-items: center;
+            font-size: 0.95rem;
+            font-weight: 800;
         }
 
-        .exchange-player {
-            padding: 8px 12px;
-            border-radius: 10px;
+        .cand-metric-pills {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .cand-pill {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+        }
+
+        /* Prediction Matrix Table */
+        .matrix-table-wrap {
+            overflow-x: auto;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-glass);
+        }
+
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            text-align: left;
+        }
+
+        .matrix-table th {
+            background: var(--fpl-purple);
+            color: var(--fpl-green);
+            padding: 12px 14px;
+            font-weight: 800;
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .matrix-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border-glass);
+            background: var(--bg-surface);
+            white-space: nowrap;
+        }
+
+        .matrix-table tr:hover td {
+            background: var(--bg-surface-elevated);
+            cursor: pointer;
+        }
+
+        .fixture-cell-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .mini-fdr-badge {
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-align: center;
+            min-width: 44px;
+        }
+
+        /* Chip Grid Display */
+        .chip-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .chip-card {
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            position: relative;
+        }
+
+        .chip-card.ready {
+            border-color: var(--fpl-green);
+            background: linear-gradient(135deg, rgba(0, 255, 135, 0.06) 0%, var(--bg-surface-elevated) 100%);
+        }
+
+        .chip-card.used {
+            opacity: 0.55;
+        }
+
+        /* Player Details Modal */
+        .fpl-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.82);
+            backdrop-filter: blur(12px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 16px;
+        }
+
+        .fpl-modal {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-fpl);
+            border-radius: var(--radius-lg);
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 255, 135, 0.2);
+            animation: modalPop 0.25s ease;
+        }
+
+        @keyframes modalPop {
+            from { transform: scale(0.92); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-hero {
+            background: linear-gradient(135deg, var(--fpl-purple) 0%, #15001c 100%);
+            padding: 24px;
+            border-bottom: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .stat-grid-modal {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box-modal {
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-sm);
+            padding: 10px;
             text-align: center;
         }
 
-        .exchange-player.out { background: rgba(255, 71, 87, 0.12); border: 1px solid rgba(255, 71, 87, 0.25); }
-        .exchange-player.in { background: rgba(0, 255, 135, 0.12); border: 1px solid rgba(0, 255, 135, 0.25); }
-
-        /* Executed Moves Timeline */
-        .timeline-item {
-            padding: 12px 14px;
-            border-radius: 12px;
-            background: rgba(0, 0, 0, 0.25);
-            border-left: 4px solid var(--primary);
-            margin-bottom: 10px;
-            font-size: 0.84rem;
+        .stat-box-modal .s-val {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #fff;
+            margin-top: 2px;
         }
 
-        .timeline-item.chip { border-left-color: var(--accent-purple); }
-
-        .toast {
-            position: fixed;
-            bottom: 28px;
-            right: 28px;
-            background: var(--bg-surface-elevated);
-            color: var(--primary);
-            border: 1px solid var(--border-glow);
-            padding: 14px 22px;
-            border-radius: 14px;
+        .stat-box-modal .s-lbl {
+            font-size: 0.68rem;
             font-weight: 700;
-            box-shadow: 0 12px 36px rgba(0,0,0,0.6);
-            display: none;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* Mobile Bottom Nav Bar */
+        .mobile-bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(17, 20, 39, 0.95);
+            backdrop-filter: blur(16px);
+            border-top: 1px solid var(--border-glass);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 6px;
             z-index: 1000;
+        }
+
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-muted);
+            font-size: 0.68rem;
+            font-weight: 700;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px 8px;
+            transition: color 0.2s ease;
+        }
+
+        .bottom-nav-item i {
+            font-size: 18px;
+        }
+
+        .bottom-nav-item.active {
+            color: var(--fpl-green);
+        }
+
+        /* Toast */
+        .fpl-toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: var(--fpl-purple);
+            color: #fff;
+            border: 1px solid var(--fpl-green);
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            font-size: 0.88rem;
+            font-weight: 700;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            display: none;
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
     </style>
 </head>
 <body>
 
-<div class="app-layout">
-    <!-- Top Header -->
-    <header class="app-header">
-        <div class="brand-logo">
-            <div class="logo-icon">
-                <i class="fa-solid fa-robot"></i>
+<div class="app-container">
+
+    <!-- FPL Brand Header -->
+    <header class="fpl-navbar">
+        <div class="brand-section">
+            <div class="brand-logo-badge">
+                <i class="fa-solid fa-crown"></i>
             </div>
-            <div>
-                <h1 class="brand-title">AI Autonomous Manager</h1>
-                <span style="font-size: 0.78rem; color: var(--text-muted);">100% Autonomous Bot for FPL Account #9765376</span>
+            <div class="brand-text">
+                <h1>FPL AI PRO</h1>
+                <p id="managerSubtitle">Autonomous Manager • 24/7 Machine Learning Suite</p>
             </div>
         </div>
-        <div class="header-status-strip">
-            <div class="live-status-pill">
+
+        <div class="nav-status-group">
+            <div class="autopilot-pill">
                 <span class="pulse-dot"></span>
-                <span>100% LIVE AUTONOMOUS (Armed)</span>
+                <span id="autopilotStatusText">AUTOPILOT ON</span>
             </div>
-            <div class="deadline-timer-pill" id="deadlineLockinIndicator">
-                <i class="fa-regular fa-clock"></i>
-                <span id="headerLockinText">Auto-Executes 30m Before Deadline</span>
-            </div>
+            <button class="fpl-tab-btn" style="min-width:auto; padding:8px 12px; background:rgba(255,255,255,0.06);" onclick="refreshAllData()">
+                <i class="fa-solid fa-rotate"></i>
+            </button>
         </div>
     </header>
 
-    <!-- Hero Command Center -->
-    <div class="ai-command-hero">
-        <div class="ai-hero-header">
-            <div class="hero-title-group">
-                <div class="hero-robot-avatar">
-                    <i class="fa-solid fa-brain"></i>
+    <!-- Top Manager Summary KPI Cards -->
+    <div class="manager-summary-strip">
+        <div class="summary-card">
+            <div class="label">My FPL Squad <i class="fa-solid fa-shield-halved"></i></div>
+            <div class="value highlight-green" id="teamNameVal">--</div>
+            <div class="sub-value" id="managerIdVal">ID: Loading...</div>
+        </div>
+        <div class="summary-card">
+            <div class="label">Gameweek Points <i class="fa-solid fa-bolt"></i></div>
+            <div class="value highlight-cyan" id="gwPointsVal">-- pts</div>
+            <div class="sub-value" id="overallRankVal">Overall: --</div>
+        </div>
+        <div class="summary-card">
+            <div class="label">Bank & Transfers <i class="fa-solid fa-wallet"></i></div>
+            <div class="value highlight-yellow" id="bankFTVal">£0.0M • 1 FT</div>
+            <div class="sub-value">Next Free Transfer Ready</div>
+        </div>
+        <div class="summary-card">
+            <div class="label">Next Deadline <i class="fa-solid fa-clock"></i></div>
+            <div class="value highlight-pink" id="deadlineCountVal">--h --m</div>
+            <div class="sub-value" id="deadlineGWLabel">GW Deadline</div>
+        </div>
+    </div>
+
+    <!-- Main Navigation Tab Bar -->
+    <nav class="fpl-tab-bar">
+        <button class="fpl-tab-btn active" onclick="switchTab('pitchTab', this)">
+            <i class="fa-solid fa-futbol"></i> Pitch & Squad
+        </button>
+        <button class="fpl-tab-btn" onclick="switchTab('predictionsTab', this)">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Predicted Points (xP)
+        </button>
+        <button class="fpl-tab-btn" onclick="switchTab('transfersTab', this)">
+            <i class="fa-solid fa-arrow-right-arrow-left"></i> AI Transfers (%)
+        </button>
+        <button class="fpl-tab-btn" onclick="switchTab('chipsTab', this)">
+            <i class="fa-solid fa-microchip"></i> Chips & 2x Rules
+        </button>
+        <button class="fpl-tab-btn" onclick="switchTab('logsTab', this)">
+            <i class="fa-solid fa-clipboard-list"></i> AI Action Log
+        </button>
+    </nav>
+
+    <!-- ================= TAB 1: PITCH & SQUAD ================= -->
+    <section id="pitchTab" class="tab-pane active">
+        <div class="main-dashboard-grid">
+            <!-- Left: Pitch Arena -->
+            <div>
+                <div class="pitch-container">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:0 6px;">
+                        <span style="font-weight:800; font-size:0.85rem; color:var(--fpl-green); text-transform:uppercase;">
+                            <i class="fa-solid fa-chart-line"></i> Starting XI • Projected xP Matrix
+                        </span>
+                        <span id="formationBadge" style="background:rgba(0,255,135,0.15); color:var(--fpl-green); padding:4px 10px; border-radius:6px; font-weight:800; font-size:0.75rem;">
+                            Formation: 3-4-3
+                        </span>
+                    </div>
+
+                    <div class="pitch-surface" id="pitchField">
+                        <div style="text-align:center; padding:100px 0; color:#fff; font-weight:700;">
+                            <i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--fpl-green);"></i>
+                            <p style="margin-top:10px;">Loading Starting XI & Predictions...</p>
+                        </div>
+                    </div>
+
+                    <!-- Priority Bench -->
+                    <div class="bench-container">
+                        <div class="bench-header">
+                            <span><i class="fa-solid fa-chair"></i> Priority Tactical Bench</span>
+                            <span style="color:var(--fpl-green);">Sub 1 ➔ Sub 2 ➔ Sub 3</span>
+                        </div>
+                        <div class="bench-row" id="benchField"></div>
+                    </div>
                 </div>
+            </div>
+
+            <!-- Right: Quick Insights & Next Feature Status -->
+            <div>
+                <!-- Active Captain & Vice Captain -->
+                <div class="fpl-card">
+                    <div class="card-header-flex">
+                        <h3><i class="fa-solid fa-crown" style="color: #ffd700;"></i> Captaincy & Multipliers</h3>
+                        <span style="font-size:0.75rem; color:var(--fpl-green); font-weight:700;">x2 Projected Points</span>
+                    </div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;" id="captaincyBox">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Next Features & Deadlines -->
+                <div class="fpl-card">
+                    <div class="card-header-flex">
+                        <h3><i class="fa-solid fa-calendar-days" style="color: var(--fpl-cyan);"></i> Next Gameweek Road-Map</h3>
+                    </div>
+                    <div id="nextFeaturesList">
+                        <div style="display:flex; flex-direction:column; gap:10px;">
+                            <div style="background:var(--bg-surface-elevated); padding:12px; border-radius:var(--radius-sm); border-left:3px solid var(--fpl-green);">
+                                <div style="font-size:0.75rem; color:var(--text-muted);">AUTOPILOT DEADLINE LOCK-IN</div>
+                                <div style="font-size:0.92rem; font-weight:800; color:#fff; margin-top:2px;">Pre-Deadline Execution 30m before lock</div>
+                                <div style="font-size:0.72rem; color:var(--fpl-green); margin-top:2px;">Evaluates last-minute team sheets & press conferences</div>
+                            </div>
+                            <div style="background:var(--bg-surface-elevated); padding:12px; border-radius:var(--radius-sm); border-left:3px solid var(--fpl-cyan);">
+                                <div style="font-size:0.75rem; color:var(--text-muted);">2X CHIPS EXPIRY WINDOW</div>
+                                <div style="font-size:0.92rem; font-weight:800; color:#fff; margin-top:2px;">1st Half Chips Valid until Gameweek 19</div>
+                                <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">Must consume Wildcard #1, TC #1, BB #1, and FH #1 before GW20</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= TAB 2: PREDICTED POINTS (xP) MATRIX ================= -->
+    <section id="predictionsTab" class="tab-pane">
+        <div class="fpl-card">
+            <div class="card-header-flex" style="flex-wrap:wrap; gap:10px;">
                 <div>
-                    <h2 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 4px;">Tactical AI Manager Dashboard</h2>
-                    <p style="color: var(--text-muted); font-size: 0.85rem;">
-                        Autonomous A-to-Z control: xGI/90 simulations, injury scans, chip deployments, captaincy, and automated transfers 30m before deadline.
+                    <h3><i class="fa-solid fa-wand-magic-sparkles" style="color:var(--fpl-green);"></i> Premier League Predicted Points (xP)</h3>
+                    <p style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">
+                        Machine learning model trained on xG, xA, xGI/90, ICT Index, and 5-Gameweek Fixture Difficulty Ratings (FDR).
+                    </p>
+                </div>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <select id="posFilterSelect" onchange="loadPredictedPlayers()" style="background:var(--bg-surface-elevated); color:#fff; border:1px solid var(--border-glass); padding:8px 12px; border-radius:var(--radius-sm); font-size:0.8rem; font-weight:700;">
+                        <option value="">All Positions</option>
+                        <option value="GKP">Goalkeepers (GKP)</option>
+                        <option value="DEF">Defenders (DEF)</option>
+                        <option value="MID">Midfielders (MID)</option>
+                        <option value="FWD">Forwards (FWD)</option>
+                    </select>
+                    <input type="text" id="playerSearchInput" placeholder="Search player or team..." oninput="debouncePlayerSearch()" style="background:var(--bg-surface-elevated); color:#fff; border:1px solid var(--border-glass); padding:8px 12px; border-radius:var(--radius-sm); font-size:0.8rem;">
+                </div>
+            </div>
+
+            <div class="matrix-table-wrap">
+                <table class="matrix-table">
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th>Pos</th>
+                            <th>Cost</th>
+                            <th>Next GW xP</th>
+                            <th>5-GW xP Total</th>
+                            <th>Form</th>
+                            <th>Upcoming 5 Fixtures & FDR</th>
+                        </tr>
+                    </thead>
+                    <tbody id="predictedPlayersTableBody">
+                        <tr>
+                            <td colspan="7" style="text-align:center; padding:30px; color:var(--text-muted);">
+                                <i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--fpl-green);"></i>
+                                <p style="margin-top:8px;">Running ML point predictions...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= TAB 3: AI TRANSFERS (%) ================= -->
+    <section id="transfersTab" class="tab-pane">
+        <div class="fpl-card">
+            <div class="card-header-flex">
+                <div>
+                    <h3><i class="fa-solid fa-chart-pie" style="color: var(--fpl-green);"></i> Pre-Deadline Transfer Candidates (%)</h3>
+                    <p style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">
+                        The AI ranks transfer combinations by projected net points gain. Top option executes 30 mins before deadline.
+                    </p>
+                </div>
+                <button class="fpl-tab-btn" style="min-width:auto; padding:6px 14px; background:rgba(0,255,135,0.1); border-color:var(--fpl-green); color:var(--fpl-green);" onclick="triggerManualRunCycle()">
+                    <i class="fa-solid fa-play"></i> Run AI Cycle Now
+                </button>
+            </div>
+
+            <div id="transferCandidatesContainer">
+                <div style="text-align:center; padding:40px 0; color:var(--text-muted);">
+                    <i class="fa-solid fa-robot fa-spin fa-2x" style="color:var(--fpl-green);"></i>
+                    <p style="margin-top:10px;">Evaluating transfer combinations...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= TAB 4: CHIPS & 2X RULES ================= -->
+    <section id="chipsTab" class="tab-pane">
+        <div class="fpl-card">
+            <div class="card-header-flex">
+                <div>
+                    <h3><i class="fa-solid fa-microchip" style="color:var(--fpl-green);"></i> 2× Chip Strategy Tracker (GW 1–19 & GW 20–38)</h3>
+                    <p style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">
+                        Rules: You have 2 of every chip. You must use 1 of EACH before GW 20 deadline!
                     </p>
                 </div>
             </div>
-            <div>
-                <button class="btn-ai-trigger" onclick="runAIManagerCycleNow()">
-                    <i class="fa-solid fa-bolt"></i> Run AI Cycle Now
+
+            <div class="chip-grid" id="chipTrackerGrid">
+                <!-- Dynamically injected -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= TAB 5: AI ACTION LOGS ================= -->
+    <section id="logsTab" class="tab-pane">
+        <div class="fpl-card">
+            <div class="card-header-flex">
+                <h3><i class="fa-solid fa-clipboard-list" style="color:var(--fpl-cyan);"></i> Autonomous Decision History</h3>
+                <button class="fpl-tab-btn" style="min-width:auto; padding:6px 12px; background:rgba(255,255,255,0.06);" onclick="loadAIStatus()">
+                    Refresh Logs
                 </button>
             </div>
+            <div id="aiLogsContainer">
+                <div style="text-align:center; padding:30px; color:var(--text-muted);">Loading logs...</div>
+            </div>
         </div>
-    </div>
+    </section>
 
-    <!-- KPI Summary Row -->
-    <div class="kpi-row">
-        <div class="kpi-card">
-            <div class="kpi-icon green"><i class="fa-solid fa-id-card"></i></div>
-            <div class="kpi-meta">
-                <h4>AI Team Name</h4>
-                <div class="kpi-val" id="teamNameVal">Ai AHLA SHBB</div>
-                <span id="managerNameVal" style="font-size: 0.74rem; color: var(--text-muted);">Manager: Ai sekelalah (ID: 9765376)</span>
-            </div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-icon blue"><i class="fa-regular fa-hourglass-half"></i></div>
-            <div class="kpi-meta">
-                <h4 id="deadlineGWLabel">GW2 Deadline</h4>
-                <div class="kpi-val" id="timeRemainingVal">--h --m</div>
-                <span id="lockinTimerVal" style="font-size: 0.74rem; color: var(--secondary);">AI Action: 30m before lock</span>
-            </div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-icon purple"><i class="fa-solid fa-vault"></i></div>
-            <div class="kpi-meta">
-                <h4>Bank & Free Transfers</h4>
-                <div class="kpi-val" id="bankFTVal">£0.2M • 1 FT</div>
-                <span style="font-size: 0.74rem; color: var(--text-muted);">Max -4 hit allowed if xP > 5</span>
-            </div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-icon orange"><i class="fa-solid fa-trophy"></i></div>
-            <div class="kpi-meta">
-                <h4>Current GW Points</h4>
-                <div class="kpi-val" id="pointsRankVal">-- pts</div>
-                <span id="overallRankVal" style="font-size: 0.74rem; color: var(--text-muted);">Overall Total: -- pts</span>
-            </div>
-        </div>
-    </div>
+</div>
 
-    <!-- Main Manager Layout: Pitch & Transfer Probabilities -->
-    <div class="manager-main-grid">
-        <!-- Left: Starting XI Football Pitch -->
-        <div class="pitch-container">
-            <div class="pitch-header">
+<!-- Player Details Modal -->
+<div class="fpl-modal-overlay" id="playerModalOverlay" onclick="closePlayerModal(event)">
+    <div class="fpl-modal" id="playerModalContent" onclick="event.stopPropagation()">
+        <div class="modal-hero">
+            <div style="display:flex; align-items:center; gap:14px;">
+                <div class="brand-logo-badge" style="background:var(--fpl-green); color:#000;">
+                    <i class="fa-solid fa-shirt"></i>
+                </div>
                 <div>
-                    <h3 style="font-size: 1.1rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
-                        <i class="fa-solid fa-shield-halved" style="color: var(--primary);"></i> Starting XI Lineup
-                    </h3>
-                    <span style="font-size: 0.75rem; color: var(--text-muted);">Optimized for upcoming Gameweek</span>
-                </div>
-                <span class="formation-badge" id="formationBadge">3-5-2</span>
-            </div>
-
-            <div class="football-pitch" id="pitchField">
-                <div style="text-align: center; color: var(--text-muted); margin: auto;">
-                    <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i>
-                    <p>Loading AI Squad from FPL Account #9765376...</p>
+                    <h2 id="modalPlayerName" style="font-size:1.3rem; font-weight:800; color:#fff;">Player Name</h2>
+                    <p id="modalPlayerTeamPos" style="font-size:0.8rem; color:var(--fpl-green); font-weight:700;">MID • £10.0M • LIV</p>
                 </div>
             </div>
-
-            <!-- Priority Bench -->
-            <div class="bench-wrapper">
-                <div class="bench-title">
-                    <span><i class="fa-solid fa-chair"></i> Priority Tactical Bench</span>
-                    <span style="color: var(--primary);">Auto-Sub 1 ➔ Sub 2 ➔ Sub 3</span>
-                </div>
-                <div class="bench-row" id="benchField"></div>
-            </div>
+            <button onclick="document.getElementById('playerModalOverlay').style.display='none'" style="background:none; border:none; color:#fff; font-size:20px; cursor:pointer;">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
         </div>
 
-        <!-- Right: Pre-Deadline Transfer Probabilities (%) & Decision Feed -->
-        <div>
-            <!-- Transfer Probability Matrix -->
-            <div class="ai-card">
-                <div class="card-title-bar">
-                    <div>
-                        <h3><i class="fa-solid fa-chart-pie" style="color: var(--primary);"></i> Pre-Deadline Transfer Options (%)</h3>
-                        <span style="font-size: 0.75rem; color: var(--text-muted);">AI ranks moves by expected points gain; executes top option 30m before deadline.</span>
-                    </div>
+        <div class="modal-body">
+            <div class="stat-grid-modal">
+                <div class="stat-box-modal">
+                    <div class="s-lbl">Next GW xP</div>
+                    <div class="s-val highlight-green" id="modalPlayerXP">--</div>
                 </div>
-
-                <div id="transferProbabilitiesList">
-                    <div style="text-align: center; padding: 24px; color: var(--text-muted); font-size: 0.85rem;">
-                        <i class="fa-solid fa-robot fa-spin" style="color: var(--primary); margin-right: 6px;"></i> Calculating transfer probabilities...
-                    </div>
+                <div class="stat-box-modal">
+                    <div class="s-lbl">Recent Form</div>
+                    <div class="s-val highlight-cyan" id="modalPlayerForm">--</div>
+                </div>
+                <div class="stat-box-modal">
+                    <div class="s-lbl">Selected By</div>
+                    <div class="s-val" id="modalPlayerSelected">--%</div>
+                </div>
+                <div class="stat-box-modal">
+                    <div class="s-lbl">xGI / 90m</div>
+                    <div class="s-val highlight-yellow" id="modalPlayerXGI">--</div>
+                </div>
+                <div class="stat-box-modal">
+                    <div class="s-lbl">Total Points</div>
+                    <div class="s-val" id="modalPlayerTotalPts">--</div>
+                </div>
+                <div class="stat-box-modal">
+                    <div class="s-lbl">ICT Index</div>
+                    <div class="s-val" id="modalPlayerICT">--</div>
                 </div>
             </div>
 
-            <!-- Captaincy & Chip Status Card -->
-            <div class="ai-card">
-                <div class="card-title-bar">
-                    <h3><i class="fa-solid fa-crown" style="color: #ffd32a;"></i> Captaincy & Autonomous Chips</h3>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;" id="captaincyChipBox">
-                    <!-- Injected dynamically -->
-                </div>
+            <h4 style="font-size:0.85rem; font-weight:800; color:#fff; text-transform:uppercase; margin-bottom:10px;">
+                <i class="fa-solid fa-calendar-day" style="color:var(--fpl-green); margin-right:6px;"></i> Next 5 Fixtures & Difficulty
+            </h4>
+            <div id="modalPlayerFixtures" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
+                <!-- Injected -->
             </div>
 
-            <!-- Executed Pre-Deadline Moves Timeline -->
-            <div class="ai-card">
-                <div class="card-title-bar">
-                    <h3><i class="fa-solid fa-list-check" style="color: var(--secondary);"></i> Executed Pre-Deadline Moves</h3>
-                    <button class="formation-badge" style="background: rgba(255,255,255,0.06); border-color: var(--border-glass); cursor: pointer;" onclick="loadAIStatus()">
-                        Refresh
-                    </button>
-                </div>
-                <div id="executedAuditTimeline">
-                    <div style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.82rem;">
-                        Loading executed move history...
-                    </div>
-                </div>
+            <div id="modalPlayerNewsBox" style="background:rgba(233,0,82,0.1); border:1px solid var(--fpl-pink); border-radius:var(--radius-sm); padding:10px; font-size:0.78rem; color:var(--fpl-pink); display:none;">
+                <i class="fa-solid fa-triangle-exclamation"></i> <span id="modalPlayerNewsText"></span>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Toast Notice -->
-<div class="toast" id="toastNotice">Notification</div>
+<!-- Mobile Bottom App Bar -->
+<nav class="mobile-bottom-bar">
+    <button class="bottom-nav-item active" onclick="switchTab('pitchTab', this)">
+        <i class="fa-solid fa-futbol"></i>
+        <span>Pitch</span>
+    </button>
+    <button class="bottom-nav-item" onclick="switchTab('predictionsTab', this)">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <span>xP Matrix</span>
+    </button>
+    <button class="bottom-nav-item" onclick="switchTab('transfersTab', this)">
+        <i class="fa-solid fa-arrow-right-arrow-left"></i>
+        <span>Transfers</span>
+    </button>
+    <button class="bottom-nav-item" onclick="switchTab('chipsTab', this)">
+        <i class="fa-solid fa-microchip"></i>
+        <span>Chips</span>
+    </button>
+    <button class="bottom-nav-item" onclick="switchTab('logsTab', this)">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>Logs</span>
+    </button>
+</nav>
+
+<!-- Toast -->
+<div class="fpl-toast" id="fplToastNotice">Notification</div>
 
 <script>
+    let globalStatusData = null;
+    let searchDebounceTimer = null;
+
     function showToast(msg) {
-        const t = document.getElementById('toastNotice');
+        const t = document.getElementById('fplToastNotice');
         t.innerText = msg;
         t.style.display = 'block';
         setTimeout(() => { t.style.display = 'none'; }, 3500);
+    }
+
+    function switchTab(tabId, btnElement) {
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.fpl-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
+
+        const targetPane = document.getElementById(tabId);
+        if (targetPane) targetPane.classList.add('active');
+
+        if (btnElement) btnElement.classList.add('active');
+
+        if (tabId === 'predictionsTab') {
+            loadPredictedPlayers();
+        }
+    }
+
+    async function refreshAllData() {
+        showToast('Refreshing FPL stats and machine learning models...');
+        await loadAIStatus();
+        loadPredictedPlayers();
     }
 
     async function loadAIStatus() {
@@ -717,41 +1195,45 @@
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Failed to fetch status');
 
-            // Header & KPIs
-            document.getElementById('teamNameVal').innerText = data.team_name || 'Ai AHLA SHBB';
-            document.getElementById('managerNameVal').innerText = `Manager: ${data.manager_name || 'Ai sekelalah'} (ID: ${data.team_id || '9765376'})`;
-            document.getElementById('bankFTVal').innerText = `£${(data.bank || 0.2).toFixed(1)}M • ${data.free_transfers || 1} FT`;
-            const gwPts = data.gw_points !== undefined ? data.gw_points : (data.overall_points || 0);
-            const totalPts = data.overall_points || 0;
-            document.getElementById('pointsRankVal').innerText = `${gwPts} pts`;
+            globalStatusData = data;
+
+            // Manager Summary
+            document.getElementById('teamNameVal').innerText = data.team_name || 'My FPL Team';
+            document.getElementById('managerIdVal').innerText = `ID: ${data.team_id || '9765376'} • ${data.manager_name || ''}`;
+            document.getElementById('bankFTVal').innerText = `£${(data.bank || 0.0).toFixed(1)}M • ${data.free_transfers || 1} FT`;
+            
+            const gwPts = data.gw_points !== undefined ? data.gw_points : 0;
+            document.getElementById('gwPointsVal').innerText = `${gwPts} pts`;
             document.getElementById('overallRankVal').innerText = data.overall_rank 
-                ? `Overall Total: ${totalPts} pts • Rank: #${data.overall_rank.toLocaleString()}` 
-                : `Overall Total: ${totalPts} pts`;
+                ? `Total: ${data.overall_points || 0} pts • Rank: #${data.overall_rank.toLocaleString()}` 
+                : `Total: ${data.overall_points || 0} pts`;
 
             if (data.deadline) {
-                document.getElementById('deadlineGWLabel').innerText = `GW${data.deadline.gameweek || data.next_gw} Deadline`;
-                document.getElementById('timeRemainingVal').innerText = data.deadline.time_remaining || '--h --m';
-                document.getElementById('headerLockinText').innerText = `Auto-Executes in GW${data.deadline.gameweek || data.next_gw} (30m before lock)`;
+                document.getElementById('deadlineGWLabel').innerText = `GW${data.deadline.gameweek || data.next_gw} Cutoff`;
+                document.getElementById('deadlineCountVal').innerText = data.deadline.time_remaining || '--h --m';
             }
 
-            // Squad Pitch
+            // Render Starting XI & Bench with xP
             if (data.starting_xi && data.starting_xi.length > 0) {
                 renderPitch(data.starting_xi, data.bench, data.captain?.id, data.vice_captain?.id);
             }
 
-            // Captain & Chip Box
-            renderCaptaincyChipBox(data.captain, data.vice_captain, data.chips_used);
+            // Render Captaincy Box
+            renderCaptaincyBox(data.captain, data.vice_captain);
 
-            // Pre-Deadline Transfer Probabilities
+            // Render Transfer Candidates
             if (data.pre_deadline_transfers && data.pre_deadline_transfers.candidates) {
-                renderTransferProbabilities(data.pre_deadline_transfers.candidates);
+                renderTransferCandidates(data.pre_deadline_transfers.candidates);
             }
 
-            // Executed Audit Timeline
-            renderAuditTimeline(data.recent_logs);
+            // Render Chips Tracker
+            renderChipsTracker(data.chips_used || [], data.next_gw || 1);
+
+            // Render Logs
+            renderLogs(data.recent_logs || []);
 
         } catch (err) {
-            console.error('Error loading status:', err);
+            console.error('Error loading AI Status:', err);
         }
     }
 
@@ -764,15 +1246,14 @@
         const mids = (startingXI || []).filter(p => p.element_type === 3 || p.position_short === 'MID');
         const fwds = (startingXI || []).filter(p => p.element_type === 4 || p.position_short === 'FWD');
 
-        document.getElementById('formationBadge').innerText = `${defs.length}-${mids.length}-${fwds.length}`;
+        document.getElementById('formationBadge').innerText = `Formation: ${defs.length}-${mids.length}-${fwds.length}`;
 
-        [gkps, defs, mids, fwds].forEach(rowPlayers => {
-            if (rowPlayers.length === 0) return;
+        [gkps, defs, mids, fwds].forEach(row => {
+            if (row.length === 0) return;
             const rowDiv = document.createElement('div');
             rowDiv.className = 'pitch-row';
-            rowPlayers.forEach(p => {
-                const card = createPitchCard(p, p.id === captainId, p.id === viceCaptainId);
-                rowDiv.appendChild(card);
+            row.forEach(p => {
+                rowDiv.appendChild(createPlayerCard(p, p.id === captainId, p.id === viceCaptainId));
             });
             pitch.appendChild(rowDiv);
         });
@@ -780,155 +1261,261 @@
         const benchField = document.getElementById('benchField');
         benchField.innerHTML = '';
         (bench || []).forEach(p => {
-            benchField.appendChild(createPitchCard(p, false, false));
+            benchField.appendChild(createPlayerCard(p, false, false));
         });
     }
 
-    function createPitchCard(p, isCap, isVice) {
+    function createPlayerCard(p, isCap, isVice) {
         const div = document.createElement('div');
-        div.className = 'player-card-pitch';
+        div.className = 'fpl-player-card';
+        div.onclick = () => openPlayerModal(p);
 
         const badgeHtml = isCap 
-            ? `<span class="captain-badge">C</span>` 
-            : (isVice ? `<span class="captain-badge" style="background:#00e5ff;">V</span>` : '');
+            ? `<div class="captain-crown">C</div>` 
+            : (isVice ? `<div class="vice-crown">V</div>` : '');
+
+        let injuryHtml = '';
+        if (p.status && p.status !== 'a') {
+            const chance = p.chance_of_playing_next_round;
+            injuryHtml = `<div class="injury-badge">${chance !== null && chance !== undefined ? chance+'%' : '!'}</div>`;
+        }
 
         const iconType = p.position_short === 'GKP' ? 'fa-hands' : 'fa-shirt';
+        const xp = p.predicted_points !== undefined ? p.predicted_points : (p.predicted_next_gw || 2.0);
+
+        let fixtureText = 'TBD';
+        let fdrClass = 'fdr-3';
+        if (p.fixtures_next_5 && p.fixtures_next_5.length > 0) {
+            const f = p.fixtures_next_5[0];
+            const ha = f.is_home ? 'H' : 'A';
+            fixtureText = `${f.opponent} (${ha})`;
+            fdrClass = `fdr-${f.difficulty || 3}`;
+        }
 
         div.innerHTML = `
-            <div class="shirt-wrapper">
+            <div class="shirt-box">
                 <i class="fa-solid ${iconType}"></i>
                 ${badgeHtml}
+                ${injuryHtml}
             </div>
-            <div class="player-name-tag">${p.web_name || 'Player'}</div>
-            <div class="player-sub-tag">£${parseFloat(p.cost || 0).toFixed(1)}M • ${p.team_short || ''}</div>
+            <div class="player-name-plate">${p.web_name || 'Player'}</div>
+            <div class="player-xp-pill">
+                <i class="fa-solid fa-bolt" style="font-size:0.6rem;"></i> ${parseFloat(xp).toFixed(1)} xP
+            </div>
+            <div class="player-fixture-pill">
+                <span class="fdr-badge ${fdrClass}"></span>
+                <span>${fixtureText}</span>
+            </div>
         `;
         return div;
     }
 
-    function renderCaptaincyChipBox(captain, viceCaptain, chipsUsed) {
-        const box = document.getElementById('captaincyChipBox');
-        box.innerHTML = '';
-
-        const capName = captain?.web_name || 'Palmer';
-        const viceName = viceCaptain?.web_name || 'Cherki';
-
+    function renderCaptaincyBox(cap, vice) {
+        const box = document.getElementById('captaincyBox');
         box.innerHTML = `
-            <div style="background: rgba(255,211,42,0.08); border: 1px solid rgba(255,211,42,0.25); border-radius: 12px; padding: 12px;">
-                <div style="font-size: 0.72rem; color: #ffd32a; font-weight: 700; text-transform: uppercase;">👑 Active Captain</div>
-                <div style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 4px 0;">${capName} (2×)</div>
-                <div style="font-size: 0.74rem; color: var(--text-muted);">Vice: ${viceName}</div>
+            <div style="background: rgba(255,215,0,0.08); border:1px solid rgba(255,215,0,0.3); border-radius:12px; padding:12px;">
+                <div style="font-size:0.7rem; color:#ffd700; font-weight:800; text-transform:uppercase;">👑 Active Captain</div>
+                <div style="font-size:1.05rem; font-weight:800; color:#fff; margin:4px 0;">${cap?.web_name || 'Palmer'} (2×)</div>
+                <div style="font-size:0.75rem; color:var(--fpl-green); font-weight:700;">Projected: ${((cap?.predicted_points || 6.5)*2).toFixed(1)} pts</div>
             </div>
-            <div style="background: rgba(157,78,221,0.08); border: 1px solid rgba(157,78,221,0.25); border-radius: 12px; padding: 12px;">
-                <div style="font-size: 0.72rem; color: var(--accent-purple); font-weight: 700; text-transform: uppercase;">⚡ Chip Strategy</div>
-                <div style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 4px 0;">Wildcard 1 Ready</div>
-                <div style="font-size: 0.74rem; color: var(--text-muted);">2 Wildcards (GW1-19, GW20-38)</div>
+            <div style="background: rgba(2,239,255,0.08); border:1px solid rgba(2,239,255,0.3); border-radius:12px; padding:12px;">
+                <div style="font-size:0.7rem; color:var(--fpl-cyan); font-weight:800; text-transform:uppercase;">🥈 Vice-Captain</div>
+                <div style="font-size:1.05rem; font-weight:800; color:#fff; margin:4px 0;">${vice?.web_name || 'Salah'}</div>
+                <div style="font-size:0.75rem; color:var(--text-muted);">Backup Multiplier</div>
             </div>
         `;
     }
 
-    function renderTransferProbabilities(candidates) {
-        const list = document.getElementById('transferProbabilitiesList');
-        list.innerHTML = '';
+    function renderChipsTracker(chipsUsed, nextGw) {
+        const grid = document.getElementById('chipTrackerGrid');
+        const chipsList = Array.isArray(chipsUsed) ? chipsUsed : [];
+        
+        const wcCount = chipsList.filter(c => c === 'wildcard').length;
+        const tcCount = chipsList.filter(c => c === '3xc').length;
+        const bbCount = chipsList.filter(c => c === 'bboost').length;
+        const fhCount = chipsList.filter(c => c === 'freehit').length;
 
+        const chipsMeta = [
+            { name: 'Wildcard', icon: 'fa-arrows-rotate', count: wcCount, desc: 'Unlimited free transfers' },
+            { name: 'Triple Captain', icon: 'fa-crown', count: tcCount, desc: '3× Captain Points Multiplier' },
+            { name: 'Bench Boost', icon: 'fa-chair', count: bbCount, desc: 'All 15 players score points' },
+            { name: 'Free Hit', icon: 'fa-wand-magic', count: fhCount, desc: 'Squad reset for 1 Gameweek' }
+        ];
+
+        grid.innerHTML = chipsMeta.map(c => {
+            const usedInFirstHalf = c.count >= 1;
+            const statusLabel = nextGw <= 19 
+                ? (usedInFirstHalf ? '1st Used • 2nd Ready in GW20' : '⚡ 1st Ready (Use by GW19)')
+                : (c.count >= 2 ? 'All 2 Used' : '⚡ 2nd Ready');
+
+            return `
+                <div class="chip-card ${!usedInFirstHalf ? 'ready' : ''}">
+                    <div style="display:flex; align-items:center; justify-content:space-between;">
+                        <i class="fa-solid ${c.icon}" style="font-size:20px; color:${!usedInFirstHalf ? 'var(--fpl-green)' : 'var(--text-muted)'};"></i>
+                        <span style="font-size:0.72rem; font-weight:800; padding:2px 8px; border-radius:4px; background:rgba(255,255,255,0.06); color:${!usedInFirstHalf ? 'var(--fpl-green)' : 'var(--text-muted)'};">
+                            ${c.count}/2 Used
+                        </span>
+                    </div>
+                    <div style="font-size:0.95rem; font-weight:800; color:#fff; margin-top:8px;">${c.name}</div>
+                    <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">${c.desc}</div>
+                    <div style="font-size:0.74rem; font-weight:700; color:${!usedInFirstHalf ? 'var(--fpl-green)' : 'var(--fpl-cyan)'}; margin-top:8px;">
+                        ${statusLabel}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function renderTransferCandidates(candidates) {
+        const container = document.getElementById('transferCandidatesContainer');
         if (!candidates || candidates.length === 0) {
-            list.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-muted);">No candidate transfers required. Squad is optimal.</div>`;
+            container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);">Current starting lineup is 100% optimal. No transfer needed.</div>`;
             return;
         }
 
-        candidates.forEach((cand, idx) => {
-            const isTop = (idx === 0);
-            const card = document.createElement('div');
-            card.className = `prob-candidate-card ${isTop ? 'top-choice' : ''}`;
-
-            const topBadge = isTop ? `<span style="background: var(--primary); color: #000; font-size: 0.7rem; font-weight: 800; padding: 2px 8px; border-radius: 6px;">⚡ TOP CHOICE (Will Execute 30m before lock)</span>` : '';
-
-            card.innerHTML = `
-                <div class="prob-header">
-                    <div>
-                        <span style="font-weight: 800; font-size: 0.92rem; color: var(--text-main);">Option #${idx+1}: ${cand.in_player}</span>
-                        ${topBadge ? `<div style="margin-top: 4px;">${topBadge}</div>` : ''}
-                    </div>
-                    <div style="text-align: right;">
-                        <span style="font-size: 1.15rem; font-weight: 900; color: ${isTop ? 'var(--primary)' : 'var(--secondary)'};">${cand.probability_pct}%</span>
-                        <div style="font-size: 0.68rem; color: var(--text-muted);">Confidence</div>
-                    </div>
-                </div>
-
-                <div class="prob-bar-container">
-                    <div class="prob-bar-fill" style="width: ${cand.probability_pct}%;"></div>
-                </div>
-
-                ${cand.type === 'TRANSFER' ? `
-                    <div class="transfer-exchange-box">
-                        <div class="exchange-player out">
-                            <div style="font-size: 0.65rem; color: #ff6b6b; font-weight: 700;">OUT</div>
-                            <div style="font-weight: 800; font-size: 0.88rem;">${cand.out_player}</div>
-                            <div style="font-size: 0.7rem; color: var(--text-muted);">${cand.out_team}</div>
+        container.innerHTML = candidates.map((cand, idx) => {
+            const isTop = idx === 0;
+            return `
+                <div class="transfer-cand-card ${isTop ? 'top-choice' : ''}">
+                    <div class="cand-header-row">
+                        <div class="cand-players-transfer">
+                            <span style="color:var(--fpl-pink);"><i class="fa-solid fa-arrow-down"></i> ${cand.out_player || 'Player OUT'}</span>
+                            <i class="fa-solid fa-arrow-right" style="color:var(--text-muted); font-size:0.8rem;"></i>
+                            <span style="color:var(--fpl-green);"><i class="fa-solid fa-arrow-up"></i> ${cand.in_player || 'Player IN'}</span>
                         </div>
-                        <i class="fa-solid fa-arrow-right" style="color: var(--primary);"></i>
-                        <div class="exchange-player in">
-                            <div style="font-size: 0.65rem; color: var(--primary); font-weight: 700;">IN</div>
-                            <div style="font-weight: 800; font-size: 0.88rem;">${cand.in_player}</div>
-                            <div style="font-size: 0.7rem; color: var(--secondary);">${cand.in_team} • £${parseFloat(cand.in_cost || 0).toFixed(1)}M</div>
+                        <div style="font-size:1.1rem; font-weight:900; color:var(--fpl-green);">
+                            ${cand.prob_percent || 80}% Prob
                         </div>
                     </div>
-                ` : `
-                    <div style="font-size: 0.8rem; color: var(--text-muted); padding: 8px 12px; background: rgba(0,0,0,0.2); border-radius: 8px;">
-                        <i class="fa-solid fa-shield-halved" style="color: var(--secondary); margin-right: 6px;"></i> ${cand.reason}
+                    <div class="cand-metric-pills">
+                        <span class="cand-pill" style="color:var(--fpl-green);"><i class="fa-solid fa-chart-line"></i> +${(cand.net_xp_gain || 0).toFixed(1)} Net xP Gain</span>
+                        <span class="cand-pill">Cost: £${(cand.in_cost || 0).toFixed(1)}M</span>
+                        <span class="cand-pill">${cand.reason || 'Optimal fixture swing & form rating'}</span>
                     </div>
-                `}
-
-                <div style="font-size: 0.74rem; color: var(--text-muted);">
-                    <i class="fa-solid fa-microchip" style="color: var(--primary); margin-right: 4px;"></i> ${cand.reason}
                 </div>
             `;
-            list.appendChild(card);
-        });
+        }).join('');
     }
 
-    function renderAuditTimeline(logs) {
-        const timeline = document.getElementById('executedAuditTimeline');
-        timeline.innerHTML = '';
+    async function loadPredictedPlayers() {
+        const pos = document.getElementById('posFilterSelect').value;
+        const search = document.getElementById('playerSearchInput').value;
+        const tbody = document.getElementById('predictedPlayersTableBody');
 
+        try {
+            const res = await fetch(`/api/predicted-players?position=${encodeURIComponent(pos)}&search=${encodeURIComponent(search)}`);
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error);
+
+            if (!data.players || data.players.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px; color:var(--text-muted);">No players found.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = data.players.map(p => {
+                const fixHtml = (p.fixtures_next_5 || []).slice(0, 5).map(f => {
+                    const ha = f.is_home ? 'H' : 'A';
+                    return `<span class="mini-fdr-badge fdr-${f.difficulty || 3}">${f.opponent} (${ha})</span>`;
+                }).join('');
+
+                return `
+                    <tr onclick='openPlayerModal(${JSON.stringify(p)})'>
+                        <td>
+                            <div style="font-weight:800; color:#fff;">${p.web_name}</div>
+                            <div style="font-size:0.72rem; color:var(--text-muted);">${p.team_short}</div>
+                        </td>
+                        <td><span style="font-size:0.72rem; font-weight:800; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.06);">${p.position_short}</span></td>
+                        <td style="font-weight:700;">£${p.cost.toFixed(1)}M</td>
+                        <td style="font-weight:900; color:var(--fpl-green); font-size:0.95rem;">⚡ ${p.predicted_points.toFixed(1)}</td>
+                        <td style="font-weight:800; color:var(--fpl-cyan);">${(p.predicted_5gw || p.predicted_points*4.8).toFixed(1)} pts</td>
+                        <td>${p.form.toFixed(1)}</td>
+                        <td><div class="fixture-cell-group">${fixHtml}</div></td>
+                    </tr>
+                `;
+            }).join('');
+        } catch (err) {
+            console.error('Error loading predicted players:', err);
+        }
+    }
+
+    function debouncePlayerSearch() {
+        clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(loadPredictedPlayers, 300);
+    }
+
+    function openPlayerModal(p) {
+        document.getElementById('modalPlayerName').innerText = p.full_name || p.web_name;
+        document.getElementById('modalPlayerTeamPos').innerText = `${p.position_short || p.position} • £${(p.cost || 0).toFixed(1)}M • ${p.team_short || p.team_name}`;
+        document.getElementById('modalPlayerXP').innerText = `${parseFloat(p.predicted_points || p.predicted_next_gw || 2.0).toFixed(1)} pts`;
+        document.getElementById('modalPlayerForm').innerText = `${parseFloat(p.form || 0).toFixed(1)}`;
+        document.getElementById('modalPlayerSelected').innerText = `${parseFloat(p.selected_by_percent || 0).toFixed(1)}%`;
+        document.getElementById('modalPlayerXGI').innerText = `${parseFloat(p.expected_goal_involvements_per_90 || 0).toFixed(2)}`;
+        document.getElementById('modalPlayerTotalPts').innerText = p.total_points || 0;
+        document.getElementById('modalPlayerICT').innerText = `${parseFloat(p.ict_index || 0).toFixed(1)}`;
+
+        const fixDiv = document.getElementById('modalPlayerFixtures');
+        fixDiv.innerHTML = (p.fixtures_next_5 || []).map(f => {
+            const ha = f.is_home ? 'H' : 'A';
+            return `
+                <div style="background:var(--bg-surface-elevated); border:1px solid var(--border-glass); border-radius:var(--radius-sm); padding:6px 10px; text-align:center; min-width:70px;">
+                    <div style="font-size:0.7rem; color:var(--text-muted);">GW ${f.event || ''}</div>
+                    <div style="font-weight:800; font-size:0.85rem; color:#fff; margin:2px 0;">${f.opponent} (${ha})</div>
+                    <span class="mini-fdr-badge fdr-${f.difficulty || 3}">FDR ${f.difficulty || 3}</span>
+                </div>
+            `;
+        }).join('');
+
+        const newsBox = document.getElementById('modalPlayerNewsBox');
+        if (p.news) {
+            document.getElementById('modalPlayerNewsText').innerText = p.news;
+            newsBox.style.display = 'block';
+        } else {
+            newsBox.style.display = 'none';
+        }
+
+        document.getElementById('playerModalOverlay').style.display = 'flex';
+    }
+
+    function closePlayerModal(e) {
+        document.getElementById('playerModalOverlay').style.display = 'none';
+    }
+
+    function renderLogs(logs) {
+        const container = document.getElementById('aiLogsContainer');
         if (!logs || logs.length === 0) {
-            timeline.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.82rem;">No previous gameweek moves executed yet.</div>`;
+            container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted);">No logs yet. Autopilot daemon running.</div>`;
             return;
         }
 
-        logs.forEach(log => {
-            const div = document.createElement('div');
-            div.className = `timeline-item ${log.type === 'CHIP' ? 'chip' : ''}`;
-            div.innerHTML = `
-                <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
-                    <strong style="color: var(--text-main);">${log.title}</strong>
-                    <span style="font-size: 0.72rem; color: var(--text-muted);">${log.timestamp}</span>
+        container.innerHTML = logs.map(l => `
+            <div style="background:var(--bg-surface-elevated); border-left:3px solid var(--fpl-green); border-radius:6px; padding:10px 14px; margin-bottom:8px; font-size:0.8rem;">
+                <div style="display:flex; justify-content:space-between; color:var(--text-muted); font-size:0.7rem;">
+                    <span>${l.timestamp || ''}</span>
+                    <span style="font-weight:800; color:var(--fpl-green);">${l.action || 'AI CYCLE'}</span>
                 </div>
-                <div style="color: var(--text-muted); font-size: 0.8rem;">${log.summary}</div>
-            `;
-            timeline.appendChild(div);
-        });
+                <div style="color:#fff; font-weight:600; margin-top:3px;">${l.summary || l.message || JSON.stringify(l)}</div>
+            </div>
+        `).join('');
     }
 
-    async function runAIManagerCycleNow() {
-        showToast('🤖 AI Manager: Executing deep research cycle for team #9765376...');
+    async function triggerManualRunCycle() {
+        showToast('🚀 Running immediate AI Gameweek cycle...');
         try {
             const res = await fetch('/api/ai-manager/run-cycle', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ dry_run: false, max_hits: -4, force_squad: false })
+                body: JSON.stringify({ dry_run: false })
             });
             const data = await res.json();
-            if (!res.ok) throw new Error(data.error || 'Execution failed');
-
-            showToast(`✅ AI Management Cycle Executed for GW${data.gameweek}!`);
-            loadAIStatus();
+            showToast('AI Cycle finished successfully!');
+            await loadAIStatus();
         } catch (err) {
-            showToast(`Error: ${err.message}`);
+            showToast('Error executing AI cycle: ' + err.message);
         }
     }
 
-    // Auto-load on startup
-    window.addEventListener('DOMContentLoaded', () => {
+    // Initial Load
+    document.addEventListener('DOMContentLoaded', () => {
         loadAIStatus();
     });
 </script>

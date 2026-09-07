@@ -1858,6 +1858,96 @@ def ai_manager_get_logs():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/predicted-players', methods=['GET'])
+def get_predicted_players():
+    try:
+        if analyzer.players_data is None or analyzer.players_data.empty:
+            analyzer.fetch_bootstrap_data()
+            analyzer.fetch_fixtures_data()
+            analyzer.train_models()
+            
+        pos_filter = request.args.get('position', '').upper()
+        search_query = request.args.get('search', '').lower().strip()
+        sort_by = request.args.get('sort', 'xp_next')
+        
+        preds_map = analyzer.predict_all_players_points()
+        current_gw = analyzer.get_current_gameweek()
+        
+        results = []
+        for _, p in analyzer.players_data.iterrows():
+            pid = int(p['id'])
+            pos_names = {1: 'GKP', 2: 'DEF', 3: 'MID', 4: 'FWD'}
+            pos_short = pos_names.get(int(p['element_type']), 'MID')
+            
+            if pos_filter and pos_short != pos_filter:
+                continue
+                
+            web_name = str(p['web_name'])
+            team_short = analyzer.team_short_map.get(int(p['team']), 'UNK')
+            team_name = analyzer.team_name_map.get(int(p['team']), 'Unknown')
+            
+            if search_query:
+                full_search = f"{web_name} {p.get('first_name', '')} {p.get('second_name', '')} {team_short} {team_name}".lower()
+                if search_query not in full_search:
+                    continue
+                    
+            xp_next = preds_map.get(pid, 2.0)
+            cost = float(p['now_cost']) / 10.0
+            fixtures_5 = analyzer.get_fixture_details_next_5gw(int(p['team']), current_gw)
+            
+            # Compute 5-GW estimated xP sum based on fixture difficulties
+            xp_5gw = 0.0
+            for i, f in enumerate(fixtures_5):
+                diff = f.get('difficulty', 3)
+                diff_mult = 1.3 if diff <= 2 else (1.0 if diff == 3 else (0.75 if diff == 4 else 0.55))
+                xp_5gw += round(xp_next * diff_mult, 1)
+                
+            results.append({
+                'id': pid,
+                'web_name': web_name,
+                'full_name': f"{p.get('first_name', '')} {p.get('second_name', '')}".strip(),
+                'team_short': team_short,
+                'team_name': team_name,
+                'position_short': pos_short,
+                'cost': cost,
+                'form': float(p.get('form', 0.0) or 0.0),
+                'total_points': int(p.get('total_points', 0) or 0),
+                'selected_by_percent': float(p.get('selected_by_percent', 0.0) or 0.0),
+                'status': str(p.get('status', 'a')),
+                'chance_of_playing_next_round': p.get('chance_of_playing_next_round'),
+                'news': str(p.get('news', '')),
+                'predicted_points': xp_next,
+                'predicted_5gw': round(xp_5gw, 1),
+                'value_rating': round(xp_next / max(cost, 4.0), 2),
+                'fixtures_next_5': fixtures_5
+            })
+            
+        if sort_by == 'cost':
+            results.sort(key=lambda x: x['cost'], reverse=True)
+        elif sort_by == 'form':
+            results.sort(key=lambda x: x['form'], reverse=True)
+        elif sort_by == 'value':
+            results.sort(key=lambda x: x['value_rating'], reverse=True)
+        elif sort_by == '5gw':
+            results.sort(key=lambda x: x['predicted_5gw'], reverse=True)
+        else:
+            results.sort(key=lambda x: x['predicted_points'], reverse=True)
+            
+        return jsonify({'players': results[:60], 'total': len(results)})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/player/<int:player_id>', methods=['GET'])
+def get_player_details(player_id):
+    try:
+        card = analyzer.get_player_full_card(player_id)
+        if not card:
+            return jsonify({'error': 'Player not found'}), 404
+        return jsonify(card)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 def preload_data():
     try:
         analyzer.fetch_bootstrap_data()
