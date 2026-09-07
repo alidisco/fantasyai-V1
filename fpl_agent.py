@@ -1234,50 +1234,92 @@ class FPLAutonomousAgent:
 
     def evaluate_chip_strategy(self, current_squad_cards, next_gw, chips_used, captain_card, bench_cards):
         """
-        Autonomous Chip Deployment Engine (FPL Rules):
-        - Wildcard 1 (GW2-GW19) / Wildcard 2 (GW20-GW38)
-        - Triple Captain (3xc)
-        - Bench Boost (bboost)
-        - Free Hit (freehit)
+        Autonomous Chip Deployment Engine (2x Chips Season Rule):
+        Total Season Chips Available:
+        - 2x Wildcard (1st in GW1-19, 2nd in GW20-38)
+        - 2x Triple Captain (1st in GW1-19, 2nd in GW20-38)
+        - 2x Bench Boost (1st in GW1-19, 2nd in GW20-38)
+        - 2x Free Hit (1st in GW1-19, 2nd in GW20-38)
+        
+        Strategy: Must deploy 1 of EACH chip before GW 20 deadline, saving 2nd for 2nd half.
         """
         if not self.analyzer or self.settings.get('chip_strategy') == 'manual':
             return None
             
-        chips_used_set = set(chips_used or [])
+        chips_list = list(chips_used or [])
+        wc_used_count = chips_list.count('wildcard')
+        tc_used_count = chips_list.count('3xc')
+        bb_used_count = chips_list.count('bboost')
+        fh_used_count = chips_list.count('freehit')
         
-        # 1. Check Wildcard (2 available per season: 1st half GW1-19, 2nd half GW20-38)
-        wc_already_used = 'wildcard' in chips_used_set
         is_first_half = (next_gw <= 19)
-        
         unfit_count = sum(1 for p in current_squad_cards if p.get('status') in ['i', 's'] or (_safe_chance(p.get('chance_of_playing_next_round')) is not None and _safe_chance(p.get('chance_of_playing_next_round')) <= 25))
-        
-        if not wc_already_used:
-            if unfit_count >= 4:
-                return 'wildcard'
-            if is_first_half and next_gw >= 18:
-                # Must consume 1st half wildcard before GW19 expiry
-                return 'wildcard'
-                
-        # 2. Check Triple Captain (3xc)
-        if '3xc' not in chips_used_set and captain_card:
-            cap_xp = captain_card.get('predicted_next_gw', 0)
-            if cap_xp >= 9.5:
-                return '3xc'
-                
-        # 3. Check Bench Boost (bboost)
-        if 'bboost' not in chips_used_set and bench_cards:
-            bench_xp_total = sum(p.get('predicted_next_gw', 0) for p in bench_cards)
-            bench_playing = all(p.get('status', 'a') == 'a' for p in bench_cards)
-            if bench_playing and bench_xp_total >= 14.0:
-                return 'bboost'
-                
-        # 4. Check Free Hit (freehit)
-        if 'freehit' not in chips_used_set:
-            blank_count = sum(1 for p in current_squad_cards if any(f.get('opponent') == 'BLANK' for f in p.get('fixtures_next_5', [])[:1]))
-            if blank_count >= 4:
-                return 'freehit'
-                
+        blank_count = sum(1 for p in current_squad_cards if any(f.get('opponent') == 'BLANK' for f in p.get('fixtures_next_5', [])[:1]))
+
+        # --- 1. FIRST HALF RULES (GW 1 - 19) ---
+        if is_first_half:
+            # 1.1 Wildcard (1st of 2)
+            if wc_used_count == 0:
+                if unfit_count >= 3:
+                    return 'wildcard'
+                if next_gw >= 18:
+                    # Must use before GW 20 cutoff
+                    return 'wildcard'
+
+            # 1.2 Free Hit (1st of 2)
+            if fh_used_count == 0:
+                if blank_count >= 3 or unfit_count >= 4:
+                    return 'freehit'
+                if next_gw == 19 and wc_used_count > 0:
+                    # Final week before GW 20 expiry
+                    return 'freehit'
+
+            # 1.3 Triple Captain (1st of 2)
+            if tc_used_count == 0 and captain_card:
+                cap_xp = captain_card.get('predicted_next_gw', 0)
+                if cap_xp >= 8.5:
+                    return '3xc'
+                if next_gw >= 17 and cap_xp >= 7.0:
+                    # Deploy before GW 20 on best premium fixture
+                    return '3xc'
+
+            # 1.4 Bench Boost (1st of 2)
+            if bb_used_count == 0 and bench_cards:
+                bench_xp_total = sum(p.get('predicted_next_gw', 0) for p in bench_cards)
+                bench_playing = all(p.get('status', 'a') == 'a' for p in bench_cards)
+                if bench_playing and bench_xp_total >= 11.0:
+                    return 'bboost'
+                if next_gw >= 17 and bench_playing and bench_xp_total >= 8.0:
+                    # Deploy before GW 20 when bench is active
+                    return 'bboost'
+
+        # --- 2. SECOND HALF RULES (GW 20 - 38) ---
+        else:
+            # 2.1 Wildcard (2nd)
+            if wc_used_count < 2:
+                if unfit_count >= 4 or (next_gw >= 36):
+                    return 'wildcard'
+
+            # 2.2 Free Hit (2nd)
+            if fh_used_count < 2:
+                if blank_count >= 3:
+                    return 'freehit'
+
+            # 2.3 Triple Captain (2nd)
+            if tc_used_count < 2 and captain_card:
+                cap_xp = captain_card.get('predicted_next_gw', 0)
+                if cap_xp >= 9.5 or (next_gw >= 36 and cap_xp >= 8.0):
+                    return '3xc'
+
+            # 2.4 Bench Boost (2nd)
+            if bb_used_count < 2 and bench_cards:
+                bench_xp_total = sum(p.get('predicted_next_gw', 0) for p in bench_cards)
+                bench_playing = all(p.get('status', 'a') == 'a' for p in bench_cards)
+                if bench_playing and (bench_xp_total >= 14.0 or (next_gw >= 36 and bench_xp_total >= 10.0)):
+                    return 'bboost'
+
         return None
+
 
     def _execute_live_moves(self, transfers, lineup, gameweek, active_chip=None):
         """Helper to post transfers and lineup to live FPL endpoints with chip support"""
