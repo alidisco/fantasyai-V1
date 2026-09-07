@@ -470,35 +470,62 @@ class FPLAutonomousAgent:
             
         sell_candidates.sort(key=lambda x: x['risk_score'], reverse=True)
         
+        # Count players per team to enforce 3-player-per-club rule
+        team_counts = {}
+        for p in current_squad_cards:
+            tid = int(p.get('team_id', p.get('team', 0)))
+            team_counts[tid] = team_counts.get(tid, 0) + 1
+
         transfer_options = []
         current_ids = {p['id'] for p in current_squad_cards}
         
         # Generate candidate pairs
-        for cand in sell_candidates[:3]:
+        for cand in sell_candidates[:4]:
             out_p = cand['player']
-            pos = cand['player'].get('element_type', 1)
-            max_cost = float(out_p.get('cost', 5.0)) + bank
+            out_tid = int(out_p.get('team_id', out_p.get('team', 0)))
+            pos = int(out_p.get('element_type', 1))
+            max_cost = float(out_p.get('cost', 5.0)) + float(bank or 0.0)
             
             pos_pool = candidate_pool[
                 (candidate_pool['element_type'] == pos) &
                 (~candidate_pool['id'].isin(current_ids)) &
-                (candidate_pool['now_cost'] <= int(max_cost * 10))
+                (candidate_pool['now_cost'] <= int(round(max_cost * 10)))
             ].copy()
             
             if pos_pool.empty:
                 continue
                 
-            for _, r in pos_pool.head(10).iterrows():
-                card = self.analyzer.get_player_full_card(int(r['id']))
-                if not card:
+            # Sort candidate pool by recent form and total points to evaluate the best targets first
+            pos_pool['form_num'] = pd.to_numeric(pos_pool['form'], errors='coerce').fillna(0.0)
+            pos_pool['pts_num'] = pd.to_numeric(pos_pool['total_points'], errors='coerce').fillna(0)
+            pos_pool.sort_values(by=['form_num', 'pts_num'], ascending=False, inplace=True)
+            
+            for _, r in pos_pool.head(15).iterrows():
+                in_pid = int(r['id'])
+                in_tid = int(r['team'])
+                
+                # Check max 3 players per club rule
+                effective_count = team_counts.get(in_tid, 0) - (1 if in_tid == out_tid else 0)
+                if effective_count >= 3:
                     continue
+                    
+                card = self.analyzer.get_player_full_card(in_pid)
+                if not card or card.get('status') != 'a':
+                    continue
+                    
                 in_xp = self._compute_advanced_xp(card, next_gw, n_gws=5)
                 gain = in_xp - cand['adv_xp']
+                
+                # We only want beneficial transfers (positive xP gain or replacing an injured player)
+                if gain <= 0.2 and cand['risk_score'] < 10:
+                    continue
+                    
+                raw_score = max(0.5, gain * 2.0 + (cand['risk_score'] * 1.2))
                 transfer_options.append({
                     'out': out_p,
                     'in': card,
-                    'xp_gain': round(gain, 1),
-                    'raw_score': max(0.2, gain * 1.5 + (cand['risk_score'] * 0.9))
+                    'xp_gain': round(max(0.1, gain), 1),
+                    'raw_score': raw_score
                 })
                 
         # Sort by raw score descending
@@ -507,48 +534,57 @@ class FPLAutonomousAgent:
         
         # Baseline: Roll / Hold Transfer
         has_urgent_issues = any(c['risk_score'] >= 10 for c in sell_candidates)
-        hold_score = 1.0 if has_urgent_issues else 8.0
+        hold_score = 1.2 if has_urgent_issues else (6.5 if not top_candidates else max(1.5, top_candidates[0]['raw_score'] * 0.45))
         
-        scores = [c['raw_score'] for c in top_candidates] + [hold_score]
-        exp_scores = [np.exp(s / 2.5) for s in scores]
+        all_options_scores = [c['raw_score'] for c in top_candidates] + [hold_score]
+        
+        # Softmax probability distribution with clear differentiation
+        exp_scores = [float(np.exp(s / 3.0)) for s in all_options_scores]
         sum_exp = sum(exp_scores)
         probs = [round((es / sum_exp) * 100, 1) for es in exp_scores]
         
         result_candidates = []
         for idx, cand in enumerate(top_candidates):
+            gain_val = float(cand['xp_gain'])
             result_candidates.append({
                 'type': 'TRANSFER',
-                'out_player': cand['out']['web_name'],
-                'out_team': cand['out'].get('team_short', ''),
-                'out_cost': cand['out'].get('cost', 0),
-                'in_player': cand['in']['web_name'],
-                'in_team': cand['in'].get('team_short', ''),
-                'in_cost': cand['in'].get('cost', 0),
-                'xp_gain': cand['xp_gain'],
+                'out_player': str(cand['out']['web_name']),
+                'out_team': str(cand['out'].get('team_short', '')),
+                'out_cost': float(cand['out'].get('cost', 0)),
+                'in_player': str(cand['in']['web_name']),
+                'in_team': str(cand['in'].get('team_short', '')),
+                'in_cost': float(cand['in'].get('cost', 0)),
+                'xp_gain': gain_val,
+                'net_xp_gain': gain_val,
                 'probability_pct': probs[idx],
-                'reason': f"Replaces {cand['out']['web_name']} with in-form {cand['in']['web_name']} (+{cand['xp_gain']} xP gain)"
+                'prob_percent': probs[idx],
+                'reason': f"Replaces {cand['out']['web_name']} with in-form {cand['in']['web_name']} (+{gain_val:.1f} xP over next 5 GWs)"
             })
             
+        hold_prob = probs[-1] if probs else 100.0
         result_candidates.append({
             'type': 'ROLL_FT',
             'out_player': 'None',
             'out_team': '',
-            'out_cost': 0,
+            'out_cost': 0.0,
             'in_player': 'Hold Free Transfer',
             'in_team': '',
-            'in_cost': 0,
+            'in_cost': 0.0,
             'xp_gain': 0.0,
-            'probability_pct': probs[-1],
+            'net_xp_gain': 0.0,
+            'probability_pct': hold_prob,
+            'prob_percent': hold_prob,
             'reason': 'Squad is well balanced; rolling FT provides 2 free transfers for next Gameweek.'
         })
         
-        result_candidates.sort(key=lambda x: x['probability_pct'], reverse=True)
+        result_candidates.sort(key=lambda x: x['prob_percent'], reverse=True)
         
         return {
             'candidates': result_candidates,
             'top_choice': result_candidates[0] if result_candidates else None,
             'lock_in_minutes_before': self.settings.get('trigger_minutes_before_deadline', 30)
         }
+
 
     def get_next_deadline_info(self):
         """Calculates exact time remaining until next FPL gameweek deadline"""
