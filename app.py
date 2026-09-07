@@ -1514,14 +1514,16 @@ def analyze():
             return jsonify({'error': f'Team with ID {team_id} not found'}), 404
         
         current_gw = int(gameweek) if gameweek else analyzer.get_current_gameweek()
+        next_gw = analyzer.get_next_gameweek()
         team_picks = analyzer.fetch_team_picks(team_id, current_gw)
         
         if not team_picks:
-            # Fallback to current GW if requested GW picks not found
-            current_gw = analyzer.get_current_gameweek()
-            team_picks = analyzer.fetch_team_picks(team_id, current_gw)
+            for gw_try in range(current_gw - 1, 0, -1):
+                team_picks = analyzer.fetch_team_picks(team_id, gw_try)
+                if team_picks:
+                    break
             if not team_picks:
-                return jsonify({'error': f'Team picks for GW{current_gw} not found'}), 404
+                return jsonify({'error': f'Team picks for Team ID {team_id} not found'}), 404
         
         analyzer.train_models()
         
@@ -1536,7 +1538,7 @@ def analyze():
         
         # Build complete 15-player cards (starting XI + bench)
         squad_cards = []
-        for idx, pick in enumerate(team_picks['picks']):
+        for idx, pick in enumerate(team_picks.get('picks', [])):
             card = analyzer.get_player_full_card(pick['element'])
             if card:
                 card['is_captain'] = pick.get('is_captain', False)
@@ -1546,21 +1548,47 @@ def analyze():
                 card['is_starting'] = (idx < 11)
                 squad_cards.append(card)
         
-        starting_xi = [p for p in squad_cards if p.get('is_starting')]
-        bench = [p for p in squad_cards if not p.get('is_starting')]
+        # Optimize lineup with AI model
+        lineup_opt = ai_agent.optimize_lineup_and_captain(squad_cards, next_gw)
+        starting_xi = lineup_opt.get('starting_xi') or [p for p in squad_cards if p.get('is_starting')]
+        bench = lineup_opt.get('bench') or [p for p in squad_cards if not p.get('is_starting')]
+        top_captain = lineup_opt.get('captain') or (captain_recs[0]['player'] if captain_recs else None)
+        top_vice = lineup_opt.get('vice_captain') or (captain_recs[1]['player'] if len(captain_recs) > 1 else None)
+        
+        # Fetch chips history
+        hist = analyzer.fetch_entry_history(team_id)
+        chips_used = [c.get('name') for c in hist.get('chips', [])] if hist else []
+        chip_advice = ai_agent.evaluate_chip_strategy(squad_cards, next_gw, chips_used, top_captain, bench)
+        
+        # Calculate pre-deadline transfer candidates with % probabilities
+        pre_deadline_transfers = ai_agent.get_pre_deadline_analysis(squad_cards, bank_budget, 1, next_gw)
         
         return jsonify({
+            'team_id': team_id,
+            'team_name': team_data.get('name', f'Team {team_id}'),
+            'manager_name': f"{team_data.get('player_first_name', '')} {team_data.get('player_last_name', '')}".strip(),
+            'overall_points': team_data.get('summary_overall_points', 0),
+            'overall_rank': team_data.get('summary_overall_rank', 0),
+            'gw_points': team_data.get('summary_event_points', 0),
             'team_data': team_data,
             'composition': composition,
             'starting_xi': starting_xi,
             'bench': bench,
             'squad': squad_cards,
+            'captain': top_captain,
+            'vice_captain': top_vice,
             'captain_recommendations': captain_recs,
             'transfer_recommendations': transfer_recs,
+            'pre_deadline_transfers': pre_deadline_transfers,
+            'chips_used': chips_used,
+            'chip_advice': chip_advice,
             'current_gameweek': current_gw,
+            'next_gw': next_gw,
+            'bank': bank_budget,
             'bank_balance': bank_budget,
             'team_value': team_value
         })
+
         
     except Exception as e:
         print(f"Error in /analyze: {str(e)}")

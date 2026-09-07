@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FPL AI Pro — Autonomous Fantasy Premier League Manager</title>
+    <title>FPL AI Pro — Autonomous Fantasy Premier League Manager & Advisor</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
@@ -64,7 +64,6 @@
             padding-bottom: 90px;
         }
 
-        /* App Container */
         .app-container {
             max-width: 1400px;
             margin: 0 auto;
@@ -81,24 +80,15 @@
             border: 1px solid var(--border-glass);
             border-radius: var(--radius-lg);
             padding: 16px 22px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             box-shadow: 0 12px 35px rgba(0,0,0,0.5), 0 0 20px rgba(0, 255, 135, 0.1);
             position: relative;
             overflow: hidden;
-        }
-
-        .fpl-navbar::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -20%;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(0,255,135,0.15) 0%, transparent 70%);
-            pointer-events: none;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .brand-section {
@@ -157,7 +147,6 @@
             font-size: 0.8rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .pulse-dot {
@@ -172,6 +161,69 @@
         @keyframes livePulse {
             0%, 100% { transform: scale(1); opacity: 1; }
             50% { transform: scale(1.4); opacity: 0.4; }
+        }
+
+        /* Team ID Input Switcher Strip */
+        .team-id-switcher-bar {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            padding: 12px 18px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            box-shadow: var(--shadow-card);
+        }
+
+        .team-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 280px;
+            max-width: 600px;
+        }
+
+        .team-input-group input {
+            flex: 1;
+            background: var(--bg-surface-elevated);
+            color: #fff;
+            border: 1px solid var(--border-glass);
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.88rem;
+            font-weight: 700;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .team-input-group input:focus {
+            border-color: var(--fpl-green);
+            box-shadow: 0 0 10px rgba(0,255,135,0.2);
+        }
+
+        .btn-analyze-team {
+            background: var(--fpl-green);
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-weight: 800;
+            font-size: 0.88rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s ease, filter 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-analyze-team:hover {
+            transform: scale(1.03);
+            filter: brightness(1.1);
         }
 
         /* Top Manager Summary Stats Strip */
@@ -246,12 +298,12 @@
 
         .fpl-tab-btn {
             flex: 1;
-            min-width: 140px;
+            min-width: 130px;
             background: transparent;
             border: none;
             color: var(--text-muted);
-            padding: 10px 18px;
-            font-size: 0.88rem;
+            padding: 10px 16px;
+            font-size: 0.85rem;
             font-weight: 700;
             border-radius: var(--radius-sm);
             cursor: pointer;
@@ -308,7 +360,7 @@
             overflow: hidden;
         }
 
-        /* Realistic Pitch Mowing Stripes & Markings */
+        /* Pitch Surface */
         .pitch-surface {
             position: relative;
             min-height: 560px;
@@ -327,7 +379,6 @@
             padding: 18px 8px;
         }
 
-        /* Pitch Center Circle */
         .pitch-surface::before {
             content: '';
             position: absolute;
@@ -341,7 +392,6 @@
             pointer-events: none;
         }
 
-        /* Pitch Halfway Line */
         .pitch-surface::after {
             content: '';
             position: absolute;
@@ -353,7 +403,6 @@
             pointer-events: none;
         }
 
-        /* Pitch Rows */
         .pitch-row {
             display: flex;
             justify-content: space-around;
@@ -363,7 +412,7 @@
             margin: 6px 0;
         }
 
-        /* Authentic FPL Player Pitch Card */
+        /* Player Pitch Card */
         .fpl-player-card {
             display: flex;
             flex-direction: column;
@@ -448,7 +497,6 @@
             border: 1px solid #fff;
         }
 
-        /* Player Details Labels */
         .player-name-plate {
             background: #37003c;
             color: #fff;
@@ -464,7 +512,6 @@
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
-        /* Predicted Points Pill (Highlight Feature) */
         .player-xp-pill {
             background: #00ff87;
             color: #000;
@@ -476,10 +523,8 @@
             align-items: center;
             justify-content: center;
             gap: 3px;
-            letter-spacing: -0.2px;
         }
 
-        /* Next Fixture & FDR Pill */
         .player-fixture-pill {
             background: #192038;
             color: #fff;
@@ -506,7 +551,6 @@
         .fdr-4 { background-color: var(--fdr-4); color: #fff; }
         .fdr-5 { background-color: var(--fdr-5); color: #fff; }
 
-        /* Bench Section */
         .bench-container {
             background: rgba(14, 18, 36, 0.9);
             border-top: 2px solid rgba(0, 255, 135, 0.2);
@@ -532,7 +576,7 @@
             align-items: center;
         }
 
-        /* Standard AI Content Card */
+        /* Card Container */
         .fpl-card {
             background: var(--bg-surface);
             border: 1px solid var(--border-glass);
@@ -549,6 +593,8 @@
             margin-bottom: 16px;
             border-bottom: 1px solid var(--border-glass);
             padding-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .card-header-flex h3 {
@@ -561,14 +607,13 @@
             gap: 10px;
         }
 
-        /* Transfer Probability Candidate Card */
+        /* Transfer Candidate Card */
         .transfer-cand-card {
             background: var(--bg-surface-elevated);
             border: 1px solid var(--border-glass);
             border-radius: var(--radius-md);
             padding: 14px 16px;
             margin-bottom: 12px;
-            transition: border-color 0.2s ease;
         }
 
         .transfer-cand-card.top-choice {
@@ -609,7 +654,7 @@
             color: var(--text-muted);
         }
 
-        /* Prediction Matrix Table */
+        /* Matrix Table */
         .matrix-table-wrap {
             overflow-x: auto;
             border-radius: var(--radius-md);
@@ -630,7 +675,6 @@
             font-weight: 800;
             font-size: 0.76rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
             white-space: nowrap;
         }
 
@@ -661,7 +705,7 @@
             min-width: 44px;
         }
 
-        /* Chip Grid Display */
+        /* Chip Grid */
         .chip-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -681,8 +725,101 @@
             background: linear-gradient(135deg, rgba(0, 255, 135, 0.06) 0%, var(--bg-surface-elevated) 100%);
         }
 
-        .chip-card.used {
-            opacity: 0.55;
+        /* AI Advisor Chat UI */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-messages-box {
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            min-height: 340px;
+            max-height: 480px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .chat-msg {
+            display: flex;
+            gap: 12px;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .chat-msg.user {
+            flex-direction: row-reverse;
+        }
+
+        .chat-msg-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .chat-msg.assistant .chat-msg-avatar {
+            background: var(--fpl-purple);
+            color: var(--fpl-green);
+            border: 1px solid var(--fpl-green);
+        }
+
+        .chat-msg.user .chat-msg-avatar {
+            background: var(--fpl-cyan);
+            color: #000;
+        }
+
+        .chat-msg-bubble {
+            max-width: 85%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 0.88rem;
+            line-height: 1.5;
+            color: var(--text-main);
+        }
+
+        .chat-msg.assistant .chat-msg-bubble {
+            background: rgba(55, 0, 60, 0.25);
+            border-color: rgba(0, 255, 135, 0.2);
+        }
+
+        .chat-msg.user .chat-msg-bubble {
+            background: rgba(0, 229, 255, 0.1);
+            border-color: rgba(0, 229, 255, 0.3);
+        }
+
+        .quick-prompts-bar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .quick-prompt-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            color: var(--text-muted);
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quick-prompt-btn:hover {
+            border-color: var(--fpl-green);
+            color: var(--fpl-green);
+            background: rgba(0, 255, 135, 0.08);
         }
 
         /* Player Details Modal */
@@ -710,12 +847,6 @@
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 255, 135, 0.2);
-            animation: modalPop 0.25s ease;
-        }
-
-        @keyframes modalPop {
-            from { transform: scale(0.92); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
         }
 
         .modal-hero {
@@ -725,7 +856,6 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            position: relative;
         }
 
         .modal-body {
@@ -761,7 +891,7 @@
             text-transform: uppercase;
         }
 
-        /* Mobile Bottom Nav Bar */
+        /* Mobile Bottom Nav */
         .mobile-bottom-bar {
             position: fixed;
             bottom: 0;
@@ -788,18 +918,11 @@
             border: none;
             cursor: pointer;
             padding: 4px 8px;
-            transition: color 0.2s ease;
         }
 
-        .bottom-nav-item i {
-            font-size: 18px;
-        }
+        .bottom-nav-item i { font-size: 18px; }
+        .bottom-nav-item.active { color: var(--fpl-green); }
 
-        .bottom-nav-item.active {
-            color: var(--fpl-green);
-        }
-
-        /* Toast */
         .fpl-toast {
             position: fixed;
             top: 24px;
@@ -814,12 +937,6 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.6);
             display: none;
             z-index: 10000;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(50px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
         }
     </style>
 </head>
@@ -835,7 +952,7 @@
             </div>
             <div class="brand-text">
                 <h1>FPL AI PRO</h1>
-                <p id="managerSubtitle">Autonomous Manager • 24/7 Machine Learning Suite</p>
+                <p id="managerSubtitle">Autonomous Manager & Multi-Team AI Advisor</p>
             </div>
         </div>
 
@@ -850,10 +967,24 @@
         </div>
     </header>
 
-    <!-- Top Manager Summary KPI Cards -->
+    <!-- Public Team ID Lookup & Analysis Bar -->
+    <div class="team-id-switcher-bar">
+        <div class="team-input-group">
+            <i class="fa-solid fa-id-card-clip" style="color:var(--fpl-green); font-size:18px;"></i>
+            <input type="number" id="customTeamIdInput" placeholder="Enter FPL Team ID (e.g. 9765376)" onkeydown="if(event.key==='Enter') analyzeCustomTeam()">
+            <button class="btn-analyze-team" onclick="analyzeCustomTeam()">
+                <i class="fa-solid fa-magnifying-glass"></i> Analyze Team
+            </button>
+        </div>
+        <div style="font-size:0.75rem; color:var(--text-muted);">
+            💡 Anyone can enter their FPL ID to get custom AI transfer suggestions & predicted points.
+        </div>
+    </div>
+
+    <!-- Manager Summary Stats Strip -->
     <div class="manager-summary-strip">
         <div class="summary-card">
-            <div class="label">My FPL Squad <i class="fa-solid fa-shield-halved"></i></div>
+            <div class="label">Loaded FPL Squad <i class="fa-solid fa-shield-halved"></i></div>
             <div class="value highlight-green" id="teamNameVal">--</div>
             <div class="sub-value" id="managerIdVal">ID: Loading...</div>
         </div>
@@ -879,14 +1010,17 @@
         <button class="fpl-tab-btn active" onclick="switchTab('pitchTab', this)">
             <i class="fa-solid fa-futbol"></i> Pitch & Squad
         </button>
+        <button class="fpl-tab-btn" onclick="switchTab('askAiTab', this)">
+            <i class="fa-solid fa-robot"></i> Ask AI Advisor
+        </button>
         <button class="fpl-tab-btn" onclick="switchTab('predictionsTab', this)">
-            <i class="fa-solid fa-wand-magic-sparkles"></i> Predicted Points (xP)
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Predicted (xP)
         </button>
         <button class="fpl-tab-btn" onclick="switchTab('transfersTab', this)">
             <i class="fa-solid fa-arrow-right-arrow-left"></i> AI Transfers (%)
         </button>
         <button class="fpl-tab-btn" onclick="switchTab('chipsTab', this)">
-            <i class="fa-solid fa-microchip"></i> Chips & 2x Rules
+            <i class="fa-solid fa-microchip"></i> 2x Chips Tracker
         </button>
         <button class="fpl-tab-btn" onclick="switchTab('logsTab', this)">
             <i class="fa-solid fa-clipboard-list"></i> AI Action Log
@@ -896,7 +1030,6 @@
     <!-- ================= TAB 1: PITCH & SQUAD ================= -->
     <section id="pitchTab" class="tab-pane active">
         <div class="main-dashboard-grid">
-            <!-- Left: Pitch Arena -->
             <div>
                 <div class="pitch-container">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:0 6px;">
@@ -926,9 +1059,8 @@
                 </div>
             </div>
 
-            <!-- Right: Quick Insights & Next Feature Status -->
+            <!-- Right Column -->
             <div>
-                <!-- Active Captain & Vice Captain -->
                 <div class="fpl-card">
                     <div class="card-header-flex">
                         <h3><i class="fa-solid fa-crown" style="color: #ffd700;"></i> Captaincy & Multipliers</h3>
@@ -939,23 +1071,18 @@
                     </div>
                 </div>
 
-                <!-- Next Features & Deadlines -->
                 <div class="fpl-card">
                     <div class="card-header-flex">
-                        <h3><i class="fa-solid fa-calendar-days" style="color: var(--fpl-cyan);"></i> Next Gameweek Road-Map</h3>
+                        <h3><i class="fa-solid fa-lightbulb" style="color: var(--fpl-cyan);"></i> Quick AI Advice for Loaded Team</h3>
                     </div>
-                    <div id="nextFeaturesList">
-                        <div style="display:flex; flex-direction:column; gap:10px;">
-                            <div style="background:var(--bg-surface-elevated); padding:12px; border-radius:var(--radius-sm); border-left:3px solid var(--fpl-green);">
-                                <div style="font-size:0.75rem; color:var(--text-muted);">AUTOPILOT DEADLINE LOCK-IN</div>
-                                <div style="font-size:0.92rem; font-weight:800; color:#fff; margin-top:2px;">Pre-Deadline Execution 30m before lock</div>
-                                <div style="font-size:0.72rem; color:var(--fpl-green); margin-top:2px;">Evaluates last-minute team sheets & press conferences</div>
-                            </div>
-                            <div style="background:var(--bg-surface-elevated); padding:12px; border-radius:var(--radius-sm); border-left:3px solid var(--fpl-cyan);">
-                                <div style="font-size:0.75rem; color:var(--text-muted);">2X CHIPS EXPIRY WINDOW</div>
-                                <div style="font-size:0.92rem; font-weight:800; color:#fff; margin-top:2px;">1st Half Chips Valid until Gameweek 19</div>
-                                <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">Must consume Wildcard #1, TC #1, BB #1, and FH #1 before GW20</div>
-                            </div>
+                    <div id="quickTeamAdviceBox">
+                        <div style="background:var(--bg-surface-elevated); padding:12px; border-radius:var(--radius-sm); border-left:3px solid var(--fpl-green); margin-bottom:10px;">
+                            <div style="font-size:0.75rem; color:var(--text-muted);">TOP TRANSFER SUGGESTION</div>
+                            <div id="quickTransferRec" style="font-size:0.92rem; font-weight:800; color:#fff; margin-top:2px;">Analyzing squad...</div>
+                        </div>
+                        <div style="background:var(--bg-surface-elevated); padding:12px; border-radius:var(--radius-sm); border-left:3px solid var(--fpl-cyan);">
+                            <div style="font-size:0.75rem; color:var(--text-muted);">CHIP STRATEGY STATUS</div>
+                            <div id="quickChipRec" style="font-size:0.92rem; font-weight:800; color:#fff; margin-top:2px;">Checking 1st half chips (GW1-19)...</div>
                         </div>
                     </div>
                 </div>
@@ -963,7 +1090,50 @@
         </div>
     </section>
 
-    <!-- ================= TAB 2: PREDICTED POINTS (xP) MATRIX ================= -->
+    <!-- ================= TAB 2: ASK AI ADVISOR (CHAT) ================= -->
+    <section id="askAiTab" class="tab-pane">
+        <div class="fpl-card">
+            <div class="card-header-flex">
+                <div>
+                    <h3><i class="fa-solid fa-robot" style="color:var(--fpl-green);"></i> FPL AI Tactical Assistant</h3>
+                    <p style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">
+                        Ask statistical questions about your team, who to buy/sell, who to captain, or player xG/xA comparisons.
+                    </p>
+                </div>
+            </div>
+
+            <div class="chat-container">
+                <div class="chat-messages-box" id="chatMessagesBox">
+                    <div class="chat-msg assistant">
+                        <div class="chat-msg-avatar"><i class="fa-solid fa-robot"></i></div>
+                        <div class="chat-msg-bubble">
+                            <strong>👋 Welcome to FPL AI Advisor!</strong><br>
+                            I have your squad and real-time Premier League metrics loaded. Ask me anything, or tap a quick question below!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Suggestion Buttons -->
+                <div class="quick-prompts-bar">
+                    <button class="quick-prompt-btn" onclick="sendQuickPrompt('Who is the highest ceiling captain pick for my team this week?')">👑 Best Captain Pick</button>
+                    <button class="quick-prompt-btn" onclick="sendQuickPrompt('What is the #1 transfer move I should make this week?')">🔄 Best Transfer Move</button>
+                    <button class="quick-prompt-btn" onclick="sendQuickPrompt('Should I use any of my 1st half chips before GW20?')">⚡ Chip Strategy (GW1-19)</button>
+                    <button class="quick-prompt-btn" onclick="sendQuickPrompt('Show me underperforming attacking players due a goal haul with high xG')">🎯 High xG Differentials</button>
+                    <button class="quick-prompt-btn" onclick="sendQuickPrompt('Compare Palmer vs Saka stats and predicted points')">⚔️ Compare Palmer vs Saka</button>
+                </div>
+
+                <!-- Input box -->
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <input type="text" id="chatInput" placeholder="Ask AI anything about your squad, transfers, or players..." onkeydown="if(event.key==='Enter') sendChatMessage()" style="flex:1; background:var(--bg-surface-elevated); color:#fff; border:1px solid var(--border-glass); padding:12px 16px; border-radius:var(--radius-sm); font-size:0.9rem; outline:none;">
+                    <button class="btn-analyze-team" style="padding:12px 22px;" onclick="sendChatMessage()">
+                        <i class="fa-solid fa-paper-plane"></i> Ask AI
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= TAB 3: PREDICTED POINTS MATRIX ================= -->
     <section id="predictionsTab" class="tab-pane">
         <div class="fpl-card">
             <div class="card-header-flex" style="flex-wrap:wrap; gap:10px;">
@@ -1011,7 +1181,7 @@
         </div>
     </section>
 
-    <!-- ================= TAB 3: AI TRANSFERS (%) ================= -->
+    <!-- ================= TAB 4: AI TRANSFERS (%) ================= -->
     <section id="transfersTab" class="tab-pane">
         <div class="fpl-card">
             <div class="card-header-flex">
@@ -1021,9 +1191,6 @@
                         The AI ranks transfer combinations by projected net points gain. Top option executes 30 mins before deadline.
                     </p>
                 </div>
-                <button class="fpl-tab-btn" style="min-width:auto; padding:6px 14px; background:rgba(0,255,135,0.1); border-color:var(--fpl-green); color:var(--fpl-green);" onclick="triggerManualRunCycle()">
-                    <i class="fa-solid fa-play"></i> Run AI Cycle Now
-                </button>
             </div>
 
             <div id="transferCandidatesContainer">
@@ -1035,7 +1202,7 @@
         </div>
     </section>
 
-    <!-- ================= TAB 4: CHIPS & 2X RULES ================= -->
+    <!-- ================= TAB 5: CHIPS & 2X RULES ================= -->
     <section id="chipsTab" class="tab-pane">
         <div class="fpl-card">
             <div class="card-header-flex">
@@ -1053,7 +1220,7 @@
         </div>
     </section>
 
-    <!-- ================= TAB 5: AI ACTION LOGS ================= -->
+    <!-- ================= TAB 6: AI ACTION LOGS ================= -->
     <section id="logsTab" class="tab-pane">
         <div class="fpl-card">
             <div class="card-header-flex">
@@ -1136,6 +1303,10 @@
         <i class="fa-solid fa-futbol"></i>
         <span>Pitch</span>
     </button>
+    <button class="bottom-nav-item" onclick="switchTab('askAiTab', this)">
+        <i class="fa-solid fa-robot"></i>
+        <span>Ask AI</span>
+    </button>
     <button class="bottom-nav-item" onclick="switchTab('predictionsTab', this)">
         <i class="fa-solid fa-wand-magic-sparkles"></i>
         <span>xP Matrix</span>
@@ -1148,18 +1319,16 @@
         <i class="fa-solid fa-microchip"></i>
         <span>Chips</span>
     </button>
-    <button class="bottom-nav-item" onclick="switchTab('logsTab', this)">
-        <i class="fa-solid fa-clock-rotate-left"></i>
-        <span>Logs</span>
-    </button>
 </nav>
 
 <!-- Toast -->
 <div class="fpl-toast" id="fplToastNotice">Notification</div>
 
 <script>
+    let globalCurrentTeamId = "9765376";
     let globalStatusData = null;
     let searchDebounceTimer = null;
+    let chatHistory = [];
 
     function showToast(msg) {
         const t = document.getElementById('fplToastNotice');
@@ -1183,9 +1352,21 @@
         }
     }
 
+    function formatFixture(f) {
+        if (!f || !f.opponent) return 'TBD';
+        if (f.opponent === 'BLANK') return 'BLANK';
+        let opp = String(f.opponent).replace(/\s*\([HA]\)/gi, '').trim();
+        const ha = f.is_home ? 'H' : 'A';
+        return `${opp} (${ha})`;
+    }
+
     async function refreshAllData() {
         showToast('Refreshing FPL stats and machine learning models...');
-        await loadAIStatus();
+        if (globalCurrentTeamId) {
+            await analyzeTeamById(globalCurrentTeamId);
+        } else {
+            await loadAIStatus();
+        }
         loadPredictedPlayers();
     }
 
@@ -1196,45 +1377,90 @@
             if (!res.ok) throw new Error(data.error || 'Failed to fetch status');
 
             globalStatusData = data;
+            if (data.team_id) globalCurrentTeamId = String(data.team_id);
+            document.getElementById('customTeamIdInput').value = globalCurrentTeamId;
 
-            // Manager Summary
-            document.getElementById('teamNameVal').innerText = data.team_name || 'My FPL Team';
-            document.getElementById('managerIdVal').innerText = `ID: ${data.team_id || '9765376'} • ${data.manager_name || ''}`;
-            document.getElementById('bankFTVal').innerText = `£${(data.bank || 0.0).toFixed(1)}M • ${data.free_transfers || 1} FT`;
-            
-            const gwPts = data.gw_points !== undefined ? data.gw_points : 0;
-            document.getElementById('gwPointsVal').innerText = `${gwPts} pts`;
-            document.getElementById('overallRankVal').innerText = data.overall_rank 
-                ? `Total: ${data.overall_points || 0} pts • Rank: #${data.overall_rank.toLocaleString()}` 
-                : `Total: ${data.overall_points || 0} pts`;
-
-            if (data.deadline) {
-                document.getElementById('deadlineGWLabel').innerText = `GW${data.deadline.gameweek || data.next_gw} Cutoff`;
-                document.getElementById('deadlineCountVal').innerText = data.deadline.time_remaining || '--h --m';
-            }
-
-            // Render Starting XI & Bench with xP
-            if (data.starting_xi && data.starting_xi.length > 0) {
-                renderPitch(data.starting_xi, data.bench, data.captain?.id, data.vice_captain?.id);
-            }
-
-            // Render Captaincy Box
-            renderCaptaincyBox(data.captain, data.vice_captain);
-
-            // Render Transfer Candidates
-            if (data.pre_deadline_transfers && data.pre_deadline_transfers.candidates) {
-                renderTransferCandidates(data.pre_deadline_transfers.candidates);
-            }
-
-            // Render Chips Tracker
-            renderChipsTracker(data.chips_used || [], data.next_gw || 1);
-
-            // Render Logs
-            renderLogs(data.recent_logs || []);
-
+            renderDashboardWithData(data);
         } catch (err) {
             console.error('Error loading AI Status:', err);
         }
+    }
+
+    async function analyzeCustomTeam() {
+        const inputVal = document.getElementById('customTeamIdInput').value.trim();
+        if (!inputVal) {
+            showToast('Please enter a valid FPL Team ID.');
+            return;
+        }
+        await analyzeTeamById(inputVal);
+    }
+
+    async function analyzeTeamById(teamId) {
+        showToast(`Analyzing FPL Team ID: ${teamId}...`);
+        try {
+            const res = await fetch('/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ team_id: teamId })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to analyze team');
+
+            globalCurrentTeamId = String(teamId);
+            renderDashboardWithData(data);
+            showToast(`Loaded team: ${data.team_name || teamId}`);
+            switchTab('pitchTab');
+        } catch (err) {
+            showToast('Error: ' + err.message);
+        }
+    }
+
+    function renderDashboardWithData(data) {
+        // Manager Summary
+        document.getElementById('teamNameVal').innerText = data.team_name || 'My FPL Team';
+        document.getElementById('managerIdVal').innerText = `ID: ${data.team_id || globalCurrentTeamId} • ${data.manager_name || ''}`;
+        document.getElementById('bankFTVal').innerText = `£${(data.bank || data.bank_balance || 0.0).toFixed(1)}M • ${data.free_transfers || 1} FT`;
+        
+        const gwPts = data.gw_points !== undefined ? data.gw_points : 0;
+        document.getElementById('gwPointsVal').innerText = `${gwPts} pts`;
+        document.getElementById('overallRankVal').innerText = data.overall_rank 
+            ? `Total: ${data.overall_points || 0} pts • Rank: #${data.overall_rank.toLocaleString()}` 
+            : `Total: ${data.overall_points || 0} pts`;
+
+        if (data.deadline) {
+            document.getElementById('deadlineGWLabel').innerText = `GW${data.deadline.gameweek || data.next_gw} Cutoff`;
+            document.getElementById('deadlineCountVal').innerText = data.deadline.time_remaining || '--h --m';
+        }
+
+        // Render Pitch
+        if (data.starting_xi && data.starting_xi.length > 0) {
+            renderPitch(data.starting_xi, data.bench, data.captain?.id, data.vice_captain?.id);
+        }
+
+        // Render Captaincy Box
+        renderCaptaincyBox(data.captain, data.vice_captain);
+
+        // Render Transfer Candidates
+        if (data.pre_deadline_transfers && data.pre_deadline_transfers.candidates) {
+            renderTransferCandidates(data.pre_deadline_transfers.candidates);
+            const top = data.pre_deadline_transfers.candidates[0];
+            if (top) {
+                document.getElementById('quickTransferRec').innerText = `${top.out_player} ➔ ${top.in_player} (+${top.net_xp_gain.toFixed(1)} xP)`;
+            }
+        }
+
+        // Quick chip advice
+        if (data.chip_advice) {
+            document.getElementById('quickChipRec').innerText = `Recommended: Deploy ${data.chip_advice.toUpperCase()}`;
+        } else {
+            document.getElementById('quickChipRec').innerText = `Squad is balanced. Save chips for future fixture swings.`;
+        }
+
+        // Render Chips Tracker
+        renderChipsTracker(data.chips_used || [], data.next_gw || 1);
+
+        // Render Logs
+        if (data.recent_logs) renderLogs(data.recent_logs);
     }
 
     function renderPitch(startingXI, bench, captainId, viceCaptainId) {
@@ -1263,14 +1489,6 @@
         (bench || []).forEach(p => {
             benchField.appendChild(createPlayerCard(p, false, false));
         });
-    }
-
-    function formatFixture(f) {
-        if (!f || !f.opponent) return 'TBD';
-        if (f.opponent === 'BLANK') return 'BLANK';
-        let opp = String(f.opponent).replace(/\s*\([HA]\)/gi, '').trim();
-        const ha = f.is_home ? 'H' : 'A';
-        return `${opp} (${ha})`;
     }
 
     function createPlayerCard(p, isCap, isVice) {
@@ -1449,6 +1667,82 @@
         searchDebounceTimer = setTimeout(loadPredictedPlayers, 300);
     }
 
+    /* AI Advisor Chat Functions */
+    async function sendQuickPrompt(promptText) {
+        document.getElementById('chatInput').value = promptText;
+        await sendChatMessage();
+    }
+
+    async function sendChatMessage() {
+        const input = document.getElementById('chatInput');
+        const msg = input.value.trim();
+        if (!msg) return;
+
+        input.value = '';
+        appendMessage('user', msg);
+
+        const loadingId = appendMessage('assistant', '<i class="fa-solid fa-robot fa-spin"></i> Analyzing data metrics...');
+
+        try {
+            const res = await fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: msg,
+                    team_id: globalCurrentTeamId,
+                    history: chatHistory
+                })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to get answer');
+
+            updateMessage(loadingId, data.response || data.message || 'No response generated.');
+            chatHistory.push({ role: 'user', content: msg });
+            chatHistory.push({ role: 'assistant', content: data.response || data.message });
+        } catch (err) {
+            updateMessage(loadingId, `⚠️ Error: ${err.message}`);
+        }
+    }
+
+    function appendMessage(role, content) {
+        const box = document.getElementById('chatMessagesBox');
+        const id = 'msg_' + Date.now();
+        const icon = role === 'assistant' ? 'fa-robot' : 'fa-user';
+
+        const div = document.createElement('div');
+        div.className = `chat-msg ${role}`;
+        div.id = id;
+        div.innerHTML = `
+            <div class="chat-msg-avatar"><i class="fa-solid ${icon}"></i></div>
+            <div class="chat-msg-bubble">${formatMarkdownToHtml(content)}</div>
+        `;
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+        return id;
+    }
+
+    function updateMessage(id, content) {
+        const msgEl = document.getElementById(id);
+        if (msgEl) {
+            msgEl.querySelector('.chat-msg-bubble').innerHTML = formatMarkdownToHtml(content);
+            const box = document.getElementById('chatMessagesBox');
+            box.scrollTop = box.scrollHeight;
+        }
+    }
+
+    function formatMarkdownToHtml(text) {
+        if (!text) return '';
+        let html = text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/`(.*?)`/g, '<code style="background:rgba(0,255,135,0.15); color:var(--fpl-green); padding:2px 5px; border-radius:4px;">$1</code>')
+            .replace(/\n\n/g, '<br><br>')
+            .replace(/\n/g, '<br>')
+            .replace(/### (.*?)(<br>|$)/g, '<h4 style="color:#fff; font-size:1rem; margin:8px 0;">$1</h4>')
+            .replace(/#### (.*?)(<br>|$)/g, '<h5 style="color:var(--fpl-green); font-size:0.9rem; margin:6px 0;">$1</h5>');
+        return html;
+    }
+
     function openPlayerModal(p) {
         document.getElementById('modalPlayerName').innerText = p.full_name || p.web_name;
         document.getElementById('modalPlayerTeamPos').innerText = `${p.position_short || p.position} • £${(p.cost || 0).toFixed(1)}M • ${p.team_short || p.team_name}`;
@@ -1469,7 +1763,6 @@
                 </div>
             `;
         }).join('');
-
 
         const newsBox = document.getElementById('modalPlayerNewsBox');
         if (p.news) {
@@ -1502,22 +1795,6 @@
                 <div style="color:#fff; font-weight:600; margin-top:3px;">${l.summary || l.message || JSON.stringify(l)}</div>
             </div>
         `).join('');
-    }
-
-    async function triggerManualRunCycle() {
-        showToast('🚀 Running immediate AI Gameweek cycle...');
-        try {
-            const res = await fetch('/api/ai-manager/run-cycle', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ dry_run: false })
-            });
-            const data = await res.json();
-            showToast('AI Cycle finished successfully!');
-            await loadAIStatus();
-        } catch (err) {
-            showToast('Error executing AI cycle: ' + err.message);
-        }
     }
 
     // Initial Load
