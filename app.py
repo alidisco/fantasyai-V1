@@ -1109,6 +1109,7 @@ class FPLAnalyzer:
     def get_transfer_recommendations(self, team_picks, budget=0.0):
         recommendations = []
         current_player_ids = [p['element'] for p in team_picks['picks']]
+        current_gw = self.get_current_gameweek()
         
         for position_type in range(1, 5):
             try:
@@ -1126,10 +1127,51 @@ class FPLAnalyzer:
                         (~self.players_data['id'].isin(current_player_ids)) &
                         (self.players_data['now_cost'] <= max_price) &
                         (self.players_data['status'] == 'a')
-                    ].sort_values('form', ascending=False)
+                    ].copy()
                     
-                    for _, alternative in same_position.head(4).iterrows():
-                        alt_card = self.get_player_full_card(int(alternative['id']))
+                    # Score alternatives with FDR-weighted composite instead of raw form
+                    scored_alts = []
+                    for _, alt_row in same_position.iterrows():
+                        alt_id = int(alt_row['id'])
+                        alt_team = int(alt_row['team'])
+                        
+                        # Next-GW fixture difficulty (critical filter)
+                        fdr_next = self.get_fixture_difficulty(alt_team, current_gw)
+                        fdr_next_5 = self.get_fixture_difficulty_next_5gw(alt_team, current_gw)
+                        avg_fdr_3gw = sum(fdr_next_5[:3]) / max(len(fdr_next_5[:3]), 1)
+                        
+                        form_val = float(alt_row.get('form', 0) or 0)
+                        xgi = float(alt_row.get('expected_goal_involvements', 0) or 0)
+                        xgi_90 = float(alt_row.get('expected_goal_involvements_per_90', 0) or 0)
+                        ppg = float(alt_row.get('points_per_game', 0) or 0)
+                        minutes = float(alt_row.get('minutes', 0) or 0)
+                        
+                        # Skip players with minimal minutes (no data to assess)
+                        if minutes < 90:
+                            continue
+                        
+                        # FDR penalty: harder fixture = lower score
+                        # FDR 1-2 = easy (bonus), FDR 3 = neutral, FDR 4-5 = hard (penalty)
+                        fdr_modifier_next = (6 - fdr_next) / 5.0  # 1.0 for FDR=1, 0.2 for FDR=5
+                        fdr_modifier_run = (6 - avg_fdr_3gw) / 5.0
+                        
+                        # Composite transfer score (fixture-aware)
+                        transfer_score = (
+                            form_val * 2.0 +                    # Recent form matters
+                            ppg * 1.5 +                          # Season points per game
+                            xgi_90 * 8.0 +                       # Underlying attacking output
+                            xgi * 0.5 +                          # Total xGI season volume
+                            fdr_modifier_next * 4.0 +            # NEXT fixture difficulty (heavy weight)
+                            fdr_modifier_run * 3.0               # 3-GW fixture run difficulty
+                        )
+                        
+                        scored_alts.append((alt_row, transfer_score, fdr_next, avg_fdr_3gw))
+                    
+                    # Sort by composite score (fixture-aware) instead of raw form
+                    scored_alts.sort(key=lambda x: x[1], reverse=True)
+                    
+                    for alt_row, t_score, fdr_next, avg_fdr_3gw in scored_alts[:4]:
+                        alt_card = self.get_player_full_card(int(alt_row['id']))
                         if not alt_card:
                             continue
                             
@@ -1137,7 +1179,10 @@ class FPLAnalyzer:
                         cost_diff = round(alt_card['cost'] - current_card['cost'], 1)
                         xgi_gain = round(alt_card['expected_goal_involvements'] - current_card['expected_goal_involvements'], 2)
                         
-                        if point_gain > 0.4 or (alt_card['form'] > current_card['form'] + 1.5):
+                        # Current player's FDR for comparison
+                        current_fdr = self.get_fixture_difficulty(current_card['team_id'], current_gw)
+                        
+                        if point_gain > 0.4 or (alt_card['form'] > current_card['form'] + 1.5) or (current_fdr >= 4 and fdr_next <= 2):
                             reasons = []
                             if alt_card['form'] > current_card['form']:
                                 reasons.append(f"Form advantage: {alt_card['form']} vs {current_card['form']}")
@@ -1147,6 +1192,16 @@ class FPLAnalyzer:
                                 reasons.append(f"xG Underperformer due for a massive haul")
                             if current_card.get('status') != 'a':
                                 reasons.append(f"Replaces flagged/injured asset ({current_card.get('news', 'Flagged')})")
+                            if fdr_next <= 2:
+                                reasons.append(f"Excellent next fixture (FDR {fdr_next}/5)")
+                            elif fdr_next >= 4:
+                                reasons.append(f"⚠️ Tough next fixture (FDR {fdr_next}/5)")
+                            if avg_fdr_3gw <= 2.5:
+                                reasons.append(f"Strong 3-GW fixture run (avg FDR {avg_fdr_3gw:.1f})")
+                            
+                            # FDR-adjusted point gain: penalize if alternative faces tough fixture
+                            fdr_adj_factor = (6 - fdr_next) / 3.0  # 1.67 for FDR 1, 0.33 for FDR 5
+                            adjusted_point_gain = point_gain * fdr_adj_factor
                             
                             recommendations.append({
                                 'out_player': current_card,
@@ -1156,13 +1211,17 @@ class FPLAnalyzer:
                                 'point_gain': round(point_gain, 1),
                                 'confidence': round((alt_card['confidence'] + current_card['confidence']) / 2, 1),
                                 'xgi_gain': xgi_gain,
+                                'fdr_next': fdr_next,
+                                'avg_fdr_3gw': round(avg_fdr_3gw, 1),
+                                'adjusted_score': round(adjusted_point_gain + xgi_gain * 0.5 + (5 - fdr_next) * 0.8, 2),
                                 'reason': " • ".join(reasons) if reasons else "Superior form & fixture schedule"
                             })
             except Exception as e:
                 print(f"Error processing transfers for position {position_type}: {str(e)}")
                 continue
         
-        return sorted(recommendations, key=lambda x: (x['point_gain'] + x['xgi_gain'] * 0.5), reverse=True)[:6]
+        # Sort by FDR-adjusted composite score (not raw point_gain)
+        return sorted(recommendations, key=lambda x: x.get('adjusted_score', 0), reverse=True)[:6]
     
     def get_captain_recommendations(self, team_picks):
         starting_xi = [p for p in team_picks['picks'][:11]]

@@ -1600,6 +1600,12 @@
 
         container.innerHTML = candidates.map((cand, idx) => {
             const isTop = idx === 0;
+            // FDR badge color
+            const fdrNext = cand.fdr_next || 3;
+            const fdrColor = fdrNext <= 2 ? 'var(--fpl-green)' : fdrNext === 3 ? 'var(--fpl-cyan)' : fdrNext === 4 ? '#ff9800' : '#ff4444';
+            const fdrLabel = fdrNext <= 2 ? '🟢 Easy' : fdrNext === 3 ? '🟡 Medium' : fdrNext === 4 ? '🟠 Tough' : '🔴 Very Hard';
+            const avgFdr3 = cand.avg_fdr_3gw !== undefined ? parseFloat(cand.avg_fdr_3gw).toFixed(1) : '–';
+            
             return `
                 <div class="transfer-cand-card ${isTop ? 'top-choice' : ''}">
                     <div class="cand-header-row">
@@ -1615,6 +1621,8 @@
                     <div class="cand-metric-pills">
                         <span class="cand-pill" style="color:var(--fpl-green);"><i class="fa-solid fa-chart-line"></i> +${parseFloat(cand.net_xp_gain !== undefined ? cand.net_xp_gain : (cand.xp_gain || 0)).toFixed(1)} Net xP Gain</span>
                         <span class="cand-pill">Cost: £${parseFloat(cand.in_cost || 0).toFixed(1)}M</span>
+                        <span class="cand-pill" style="color:${fdrColor}; font-weight:700;"><i class="fa-solid fa-calendar"></i> Next: ${fdrLabel} (FDR ${fdrNext})</span>
+                        <span class="cand-pill"><i class="fa-solid fa-chart-bar"></i> 3-GW Avg FDR: ${avgFdr3}</span>
                         <span class="cand-pill">${cand.reason || 'Optimal fixture swing & form rating'}</span>
                     </div>
                 </div>
